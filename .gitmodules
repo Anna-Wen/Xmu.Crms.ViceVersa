@@ -1,0 +1,9 @@
+[submodule "Xmu.Crms.Shared"]
+	path = Xmu.Crms.Shared
+	url = git@github.com:Librazy/Xmu.Crms.Shared.git
+[submodule "Xmu.Crms.Services.ViceVersa"]
+	path = Xmu.Crms.Services.ViceVersa
+	url = git@github.com:Anna-Wen/Xmu.Crms.Services.ViceVersa.git
+[submodule "Xmu.Crms.Web.ViceVersa"]
+	path = Xmu.Crms.Web.ViceVersa
+	url = git@github.com:Anna-Wen/Xmu.Crms.Web.ViceVersa.git

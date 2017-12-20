@@ -1,9 +1,12 @@
 [submodule "Xmu.Crms.Shared"]
 	path = Xmu.Crms.Shared
 	url = https://github.com/Librazy/Xmu.Crms.Shared.git
+	branch = master
 [submodule "Xmu.Crms.Services.ViceVersa"]
 	path = Xmu.Crms.Services.ViceVersa
 	url = https://github.com/Anna-Wen/Xmu.Crms.Services.ViceVersa.git
+	branch = master
 [submodule "Xmu.Crms.Web.ViceVersa"]
 	path = Xmu.Crms.Web.ViceVersa
 	url = https://github.com/Anna-Wen/Xmu.Crms.Web.ViceVersa.git
+	branch = master

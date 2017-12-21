@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Xmu.Crms.Shared.Models;
+using Xmu.Crms.Shared.Service;
 
 namespace Xmu.Crms.ViceVersa
 {
@@ -8,6 +9,7 @@ namespace Xmu.Crms.ViceVersa
     [Route("/school")]
     public class SchoolController : Controller
     {
+
         // GET: /school?city={city}
         [HttpGet]
         public IActionResult GetSchoolViaCity([FromQuery]string city)

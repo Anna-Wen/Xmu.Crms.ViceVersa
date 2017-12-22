@@ -17,7 +17,11 @@ namespace Xmu.Crms.ViceVersa
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseIISIntegration()
+<<<<<<< HEAD
                 .ConfigureServices(services => services.AddViceVersaGradeDao().AddViceVersaGradeService().AddViceVersaCourseDao().AddViceVersaCourseService().AddCrmsView("Web.ViceVersa"))
+=======
+                .ConfigureServices(services => services.AddViceVersaClassService().AddViceVersaClassDao().AddCrmsView("Web.ViceVersa"))
+>>>>>>> origin/JJ's
                 .UseStartup<Startup>()
                 .Build();
     }

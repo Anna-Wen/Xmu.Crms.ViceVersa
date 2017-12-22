@@ -93,8 +93,8 @@ namespace Xmu.Crms.ViceVersa
             //if(false)
             //  return Forbid();
 
-            var deleteclass=_classService.DeleteClassByClassId(classId);
-            if(!deleteclass)return NotFound();
+            _classService.DeleteClassByClassId(classId);
+           
 
             //Success
             return NoContent();

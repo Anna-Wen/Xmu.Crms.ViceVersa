@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Xmu.Crms.Shared.Models;
 using Xmu.Crms.Shared.Service;
+using Xmu.Crms.Shared.Exceptions;
 
 namespace Xmu.Crms.ViceVersa
 {
@@ -16,28 +17,20 @@ namespace Xmu.Crms.ViceVersa
             _classService = classService;
         }
 
-        //        // GET: /class?courseName={courseName}&courseTeacher={courseTeacher}
-        //        [HttpGet]
-        //        public IActionResult GetClassListFromQuery([FromQuery]string courseName, [FromQuery]string courseTeacher)
-        //        {
-        //            // Fetch selected class list from database
-        //            List<CourseClass> classList = new List<CourseClass>
-        //            {
-        //                new CourseClass { Id = 23, Name = "周一1-2节", NumStudent = 60, Time = "周三1-2节、周五1-2节", Site = "学生公寓405", CourseId = 1, CourseName = "OOAD", CourseTeacher = new Teacher { Name = "邱明" } },
-        //                new CourseClass { Id = 42, Name = ".NET一班", NumStudent = 60, Time = "周三3-4节、周四1-2节", Site = "海韵教学楼204", CourseId = 3, CourseName = ".Net 平台开发", CourseTeacher = new Teacher { Name = "杨律青" } }
-        //            };
-        //            if (courseName != null && courseName != "")
-        //                classList = classList.FindAll((p) => p.CourseName.StartsWith(courseName));
-        //            if (courseTeacher != null && courseTeacher != "")
-        //                classList = classList.FindAll((p) => p.CourseTeacher.Name.StartsWith(courseTeacher));
-
-        //            // If class not found
-        //            if (classList == null)
-        //                return NotFound();
-
-        //            // Success
-        //            return Json(classList);
-        //        }
+        // GET: /class?courseName={courseName}&courseTeacher={courseTeacher}
+        [HttpGet]
+        public IActionResult GetClassListFromQuery([FromQuery]string courseName, [FromQuery]string courseTeacher)
+        {
+            try
+            {
+                // Fetch selected class list from database
+                List<ClassInfo> classList = _classService.ListClassByName(courseName, courseTeacher);
+                
+                // Success
+                return Json(classList);
+            }
+            catch(ClassNotFoundException) { return NotFound(); }
+        }
 
         // GET: /class/{classId}
         [HttpGet("{classId}")]

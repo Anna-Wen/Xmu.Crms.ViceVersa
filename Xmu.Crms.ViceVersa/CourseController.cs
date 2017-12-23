@@ -156,7 +156,7 @@ namespace Xmu.Crms.ViceVersa
                 //courseId格式错误
                 return BadRequest();
             }catch(Exception e)
-            { 
+            {
             }
             return Json(courseVO);
         }
@@ -192,22 +192,31 @@ namespace Xmu.Crms.ViceVersa
             return NoContent();
         }
 
-        //        // DELETE: /course/{courseId}
-        //        [HttpDelete("{courseId}")]
-        //        public IActionResult DeleteCourseByCourseId(int courseId)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied
-        //            //if(false)
-        //            //  return Forbid();
+        // DELETE: /course/{courseId}
+        [HttpDelete("{courseId}")]
+        public IActionResult DeleteCourseByCourseId(int courseId)
+        {
+            //Authentication
+            //When user's permission denied
+            //if(false)
+            //  return Forbid();
 
-        //            //Delete course from database
-        //            //if not found
-        //            //    return NotFound();
-
-        //            //Success
-        //            return NoContent();
-        //        }
+            try
+            {
+                //Delete course from database
+                _iCourseService.DeleteCourseByCourseId(courseId);
+            }catch(CourseNotFoundException ec)
+            {
+                return NotFound();
+            }catch(ArgumentException ea)
+            {
+                return BadRequest();
+            }catch(Exception e)
+            {
+            }
+            //Success
+            return NoContent();
+        }
 
         //        // GET: /course/{courseId}/class
         //        [HttpGet("{courseId}/class")]

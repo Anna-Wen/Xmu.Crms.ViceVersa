@@ -4,6 +4,7 @@ using Xmu.Crms.Shared.Models;
 using Xmu.Crms.Shared.Service;
 using Xmu.Crms.Shared.Exceptions;
 using System;
+using Xmu.Crms.Web.ViceVersa.VO;
 
 namespace Xmu.Crms.ViceVersa
 {
@@ -12,24 +13,61 @@ namespace Xmu.Crms.ViceVersa
     public class CourseController : Controller
     {
         private readonly ICourseService _iCourseService;
+        private readonly IClassService _iClassService;
 
-        public CourseController(ICourseService iCourseService)
+        public CourseController(ICourseService iCourseService, IClassService iClassService)
         {
+            _iClassService = iClassService;
             _iCourseService = iCourseService;
         }
 
-        //        // GET: /course
-        //        [HttpGet]
-        //        public IActionResult GetCourses()
-        //        {
-        //            List<Course> courses = new List<Course>
-        //            {
-        //                new Course { Id = 1, Name = "OOAD", NumClass = 3, NumStudent = 60, StartTime = "1/9/2017", EndTime = "1/1/2018" },
-        //                new Course { Id = 2, Name = "J2EE", NumClass = 1, NumStudent = 60, StartTime = "1/9/2017", EndTime = "1/1/2018" }
-        //            };
 
-        //            return Json(courses);
-        //        }
+        // GET: /course
+        [HttpGet]
+        public IActionResult GetCourses()
+        {
+            try
+            {
+                //根据教师id获得其教的所有课程
+                IList<Course> courseList = _iCourseService.ListCourseByUserId(1);  //JWT???
+                //针对每个课程查询具体信息
+                List<CourseVO> courseVOList = new List<CourseVO>();
+                foreach (var i in courseList)
+                {
+                    //根据课程获得该课程的所有班级
+                    List<ClassInfo> classList = (List<ClassInfo>)_iClassService.ListClassByCourseId(i.Id);
+                    int numClass = classList.Count;
+                    //计算该课程共有多少个学生
+                    int numStudent = 0;
+                    foreach (var j in classList)
+                    {
+                        //将每个班的学生相加
+                        numStudent += 0;   //???UserService???还是新加???
+                    }
+                    CourseVO courseVO = new CourseVO(i, numClass, numStudent);
+                    courseVOList.Add(courseVO);
+                }
+                    ////根据课程id获得
+                    //List<Course> courses = new List<Course>
+                    //{
+                    //    new Course { Id = 1, Name = "OOAD", NumClass = 3, NumStudent = 60, StartTime = "1/9/2017", EndTime = "1/1/2018" },
+                    //    new Course { Id = 2, Name = "J2EE", NumClass = 1, NumStudent = 60, StartTime = "1/9/2017", EndTime = "1/1/2018" }
+                    //};
+
+                return Json(courseVOList);
+            }catch(CourseNotFoundException ec)
+            {
+                return NotFound();
+            }catch(ClassNotFoundException ecl)
+            {
+                return NotFound();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
 
         // POST: /course
         [HttpPost]
@@ -103,12 +141,13 @@ namespace Xmu.Crms.ViceVersa
         public IActionResult GetCourseByCourseId(int courseId)
         {
             // Fetch data from database
-            Course course = null;
+            CourseVO courseVO = null;
             try
             {
-                course = _iCourseService.GetCourseByCourseId(courseId);
+                Course course = _iCourseService.GetCourseByCourseId(courseId);
+                courseVO = new CourseVO(course);
             }
-            catch(CourseNotFoundException ec)
+            catch (CourseNotFoundException ec)
             {
                 //If not found
                 return NotFound();
@@ -119,7 +158,7 @@ namespace Xmu.Crms.ViceVersa
             }catch(Exception e)
             { 
             }
-            return Json(course);
+            return Json(courseVO);
         }
 
         //// GET: /course/{courseId}
@@ -135,28 +174,23 @@ namespace Xmu.Crms.ViceVersa
         //    return Json(course);
         //}
 
-        //        // PUT: /course/{courseId}
-        //        [HttpPut("{courseId}")]
-        //        public IActionResult PutCourseByCourseId(int courseId, [FromBody]dynamic json)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied
-        //            //if(false)
-        //            //return Forbid();
+        // PUT: /course/{courseId}
+        [HttpPut("{courseId}")]
+        public IActionResult PutCourseByCourseId(int courseId, [FromBody]dynamic json)
+        {
+            //Authentication
+            //When user's permission denied
+            //if(false)
+            //return Forbid();
 
-        //            //Get information from json
-        //            GradeProportion proportions = null;
-        //            if (json.Proportions != null && json.Proportions.Report != "" && json.Proportions.Presentation != "" && json.Proportions.C != "" && json.Proportions.B != "" && json.Proportions.A != "")
-        //            {
-        //                proportions = new GradeProportion { Report = json.Proportions.Report, Presentation = json.Proportions.Presentation, C = json.Proportions.C, B = json.Proportions.B, A = json.Proportions.A };
-        //            }
-        //            Course editedCourse = new Course { Name = json.Name, Description = json.Description, StartTime = json.StartTime, EndTime = json.EndTime, Proportions = proportions };
+            //Get information from json
+            Course editedCourse = new Course { Name = json.Name, Description = json.Description, StartDate = json.StartTime, EndDate = json.EndTime };
 
-        //            //Change information in database
-
-        //            //Success
-        //            return NoContent();
-        //        }
+            //Change information in database
+            _iCourseService.UpdateCourseByCourseId(courseId,editedCourse);
+            //Success
+            return NoContent();
+        }
 
         //        // DELETE: /course/{courseId}
         //        [HttpDelete("{courseId}")]

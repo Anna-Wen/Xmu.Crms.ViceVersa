@@ -11,6 +11,7 @@ namespace Xmu.Crms.ViceVersa
     public class ClassController : Controller
     {
         private readonly IClassService _classService;
+     
 
         public ClassController(IClassService classService)
         {
@@ -36,25 +37,13 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
-            ClassInfo newclass = new ClassInfo
+            try
             {
-                Name = "2323",
-                ReportPercentage = 60,
-                PresentationPercentage = 40,
-                FivePointPercentage = 4,
-                FourPointPercentage = 3,
-                ThreePointPercentage = 3
-            };
-            _classService.InsertScoreRule(3, newclass);
-            return Json(0);
-
-            //try
-            //{
-            //    ClassInfo classinfo = _classService.GetClassByClassId(classId);
-            //    // Success
-            //    return Json(classinfo);
-            //}
-            //catch (ClassNotFoundException) { return NotFound(); }
+                ClassInfo classinfo = _classService.GetClassByClassId(classId);
+                // Success
+                return Json(classinfo);
+            }
+            catch (ClassNotFoundException) { return NotFound(); }
         }
 
         //        // PUT: /class/{classId}
@@ -108,24 +97,30 @@ namespace Xmu.Crms.ViceVersa
         //[HttpPost("{classId}/student")]
         //public IActionResult PostStudentUnderClass(int classId, [FromBody]dynamic json)
         //{
-        //    //Authentication
-        //    //When user's permission denied
-        //    //if(false)
-        //    //  return Forbid();
+        //    try
+        //    {
+        //        //Authentication
+        //        //When user's permission denied
+        //        //if(false)
+        //        //  return Forbid();
 
-        //    // Get information from json
-        //    //Student newStudentInClass = new Student { Id = json.Id };
+        //        // Get information from json
+        //        //Student newStudentInClass = new Student { Id = json.Id };
 
-        //    // Judge and store class-student information in server
+        //        // Judge and store class-student information in server
 
-        //    // If already select another class under the same course
-        //    ClassInfo classinfo= _classService.GetClassByClassId(classId);
-        //    _classService.ListClassByCourseId(classinfo.Course.Id);
-        //    //  return Conflict(); 
+        //        // If already select another class under the same course
 
-        //    // Return class id & student id
-        //    string uri = "/class/" + classId + "/student/" + newStudentInClass.Id;
-        //    return Created(uri, newStudentInClass);
+        //        //找到该班级所属课程下的所有班级
+        //        IList<ClassInfo> classList = _classService.ListClassByCourseId(classinfo.Course.Id);
+               
+        //        //  return Conflict(); 
+
+        //        // Return class id & student id
+        //        string uri = "/class/" + classId + "/student/" + newStudentInClass.Id;
+        //        return Created(uri, newStudentInClass);
+        //    }
+        //    catch { }
         //}
 
         // DELETE: /class/{classId}/student/{studentId}

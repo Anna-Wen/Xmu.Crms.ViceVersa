@@ -123,6 +123,7 @@ namespace Xmu.Crms.ViceVersa
         //    catch { }
         //}
 
+
         // DELETE: /class/{classId}/student/{studentId}
         [HttpDelete("{classId}/student/{studentId}")]
         public IActionResult DeleteStudentUnderClass(int classId, int studentId)

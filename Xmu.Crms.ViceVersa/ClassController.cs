@@ -36,25 +36,13 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
-            ClassInfo newclass = new ClassInfo
+            try
             {
-                Name = "2323",
-                ReportPercentage = 60,
-                PresentationPercentage = 40,
-                FivePointPercentage = 4,
-                FourPointPercentage = 3,
-                ThreePointPercentage = 3
-            };
-            _classService.InsertScoreRule(3, newclass);
-            return Json(0);
-
-            //try
-            //{
-            //    ClassInfo classinfo = _classService.GetClassByClassId(classId);
-            //    // Success
-            //    return Json(classinfo);
-            //}
-            //catch (ClassNotFoundException) { return NotFound(); }
+                ClassInfo classinfo = _classService.GetClassByClassId(classId);
+                // Success
+                return Json(classinfo);
+            }
+            catch (ClassNotFoundException) { return NotFound(); }
         }
 
         //        // PUT: /class/{classId}

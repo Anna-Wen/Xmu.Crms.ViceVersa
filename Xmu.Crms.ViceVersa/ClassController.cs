@@ -36,20 +36,22 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
-            //var selectedClass = _classService.GetClassByClassId(classId);
-            //if (selectedClass == null)
-            //    return NotFound();
+            ClassInfo newclass = new ClassInfo();
+            newclass.Name = "2323";
+            newclass.ReportPercentage = 60; newclass.PresentationPercentage = 40;
+            newclass.FivePointPercentage = 5;
+            newclass.FourPointPercentage = 3;
+            newclass.ThreePointPercentage = 2;
+            _classService.InsertClassById(1, 1, newclass);
+            return Json(0);
 
-
-            //// Success
-            //return Json(selectedClass);
-            List<ClassInfo> list = _classService.ListClassByCourseId(classId);
-            if (list == null)
-                return NotFound();
-
-
-            // Success
-            return Json(list);
+            //try
+            //{
+            //    ClassInfo classinfo = _classService.GetClassByClassId(classId);
+            //    // Success
+            //    return Json(classinfo);
+            //}
+            //catch (ClassNotFoundException) { return NotFound(); }
         }
 
         //        // PUT: /class/{classId}
@@ -81,59 +83,67 @@ namespace Xmu.Crms.ViceVersa
         [HttpDelete("{classId}")]
         public IActionResult DeleteClass(long classId)
         {
-            //Authentication
-            //When user's permission denied
-            //if(false)
-            //  return Forbid();
+            try
+            {
+                //Authentication
+                //When user's permission denied
+                //if(false)
+                //  return Forbid();
 
-            _classService.DeleteClassByClassId(classId);
-           
+                _classService.DeleteClassByClassId(classId);
 
-            //Success
-            return NoContent();
+
+                //Success
+                return NoContent();
+            }
+            catch (ClassNotFoundException) { return NotFound(); }
         }
 
-  
 
-        //        // Post: /class/{classId}/student
-        //        [HttpPost("{classId}/student")]
-        //        public IActionResult PostStudentUnderClass(int classId, [FromBody]dynamic json)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied
-        //            //if(false)
-        //            //  return Forbid();
 
-        //            // Get information from json
-        //            Student newStudentInClass = new Student { Id = json.Id };
+        //// Post: /class/{classId}/student
+        //[HttpPost("{classId}/student")]
+        //public IActionResult PostStudentUnderClass(int classId, [FromBody]dynamic json)
+        //{
+        //    //Authentication
+        //    //When user's permission denied
+        //    //if(false)
+        //    //  return Forbid();
 
-        //            // Judge and store class-student information in server
+        //    // Get information from json
+        //    //Student newStudentInClass = new Student { Id = json.Id };
 
-        //            // If already select another class under the same course
-        //            //  return Conflict(); 
+        //    // Judge and store class-student information in server
 
-        //            // Return class id & student id
-        //            string uri = "/class/" + classId + "/student/" + newStudentInClass.Id;
-        //            return Created(uri, newStudentInClass);
-        //        }
+        //    // If already select another class under the same course
+        //    ClassInfo classinfo= _classService.GetClassByClassId(classId);
+        //    _classService.ListClassByCourseId(classinfo.Course.Id);
+        //    //  return Conflict(); 
 
-        //        // DELETE: /class/{classId}/student/{studentId}
-        //        [HttpDelete("{classId}/student/{studentId}")]
-        //        public IActionResult DeleteStudentUnderClass(int classId, int studentId)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied
-        //            //if(false)
-        //            //  return Forbid();
+        //    // Return class id & student id
+        //    string uri = "/class/" + classId + "/student/" + newStudentInClass.Id;
+        //    return Created(uri, newStudentInClass);
+        //}
 
-        //            //Delete student class relation from database
-        //            //if not found
-        //            //    return NotFound();
+        // DELETE: /class/{classId}/student/{studentId}
+        [HttpDelete("{classId}/student/{studentId}")]
+        public IActionResult DeleteStudentUnderClass(int classId, int studentId)
+        {
+            try
+            {
+                //Authentication
+                //When user's permission denied
+                //if(false)
+                //  return Forbid();
 
-        //            //Success
-        //            return NoContent();
+                _classService.DeleteCourseSelectionById(studentId, classId);
 
-        //        }
+                //Success
+                return NoContent();
+            }
+            catch(UserNotFoundException) { return NotFound(); }
+            catch (ClassNotFoundException) { return NotFound(); }
+        }
 
         //        // GET: /class/{classId}/classgroup
         //        [HttpGet("{classId}/classgroup")]

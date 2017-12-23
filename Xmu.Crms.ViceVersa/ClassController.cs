@@ -24,7 +24,7 @@ namespace Xmu.Crms.ViceVersa
             try
             {
                 // Fetch selected class list from database
-                List<ClassInfo> classList = _classService.ListClassByName(courseName, courseTeacher);
+                IList<ClassInfo> classList = _classService.ListClassByName(courseName, courseTeacher);
                 
                 // Success
                 return Json(classList);

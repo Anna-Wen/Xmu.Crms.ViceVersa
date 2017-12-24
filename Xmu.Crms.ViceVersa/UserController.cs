@@ -7,6 +7,7 @@ using Xmu.Crms.Shared.Models;
 using Xmu.Crms.Shared.Service;
 using System.Linq;
 using Xmu.Crms.Web.ViceVersa.VO;
+using System;
 
 namespace Xmu.Crms.ViceVersa
 {
@@ -26,6 +27,7 @@ namespace Xmu.Crms.ViceVersa
         }
 
         // GET: /me
+        [Authorize]
         [HttpGet("me")]
         public IActionResult GetCurrentUser()
         {
@@ -33,13 +35,13 @@ namespace Xmu.Crms.ViceVersa
             {
                 // 调用UserService中的GetUserByUserId方法
                 UserInfo userInfo = _userService.GetUserByUserId(User.Id());
-                userInfo.Password = null;       //不能明文传输Password到客户端
 
                 //转换为VO对象
                 UserVO userVO = userInfo;
 
                 return Json(userVO);
             }
+            // 如果用户不存在，返回404
             catch (UserNotFoundException)
             {
                 return NotFound();
@@ -47,85 +49,147 @@ namespace Xmu.Crms.ViceVersa
         }
 
         // PUT: /me
+        [Authorize]
         [HttpPut("me")]
         public IActionResult Put(int id, [FromBody] dynamic json)
         {
-            School xmu = new School { Id = 12, Name = "厦门大学", Province = "福建", City = "厦门" };
-            UserVO dataUser = new UserVO();
-            dataUser.Type = json.Type;
-            dataUser.Name = json.Name;
-            dataUser.Number = json.Number;
-            dataUser.Gender = json.Gender;
-            dataUser.Title = json.Title;
-            dataUser.Avatar = json.Avatar;
+            try
+            {
+                School school = new School { Name = json.School };
+                // 修改头像要加吗？？？
+                // Avatar = json.Avatar
+                UserInfo user = new UserInfo { Name = json.Name, Number = json.Number, School = school, Phone = json.Phone, Email = json.Email };
+                if (json.Type == "teacher")
+                {
+                    user.Type = Shared.Models.Type.Teacher;
+                    //修改职称
+                    if (json.Title == "教授")
+                        user.Title = Title.Professer;
+                    else
+                        user.Title = Title.Other;
+                }
+                else if (json.Type == "student")
+                {
+                    user.Type = Shared.Models.Type.Student;
 
-            // Update database
+                    //修改学历
+                    if (json.Title == "本科生" || json.Title == "本科")
+                        user.Education = Education.Bachelor;
+                    else if (json.Title == "研究生")
+                        user.Education = Education.Master;
+                    else if (json.Title == "博士生" || "博士")
+                        user.Education = Education.Doctor;
+                    // 其余的填空情况怎么处理？？？
+                    else
+                        user.Education = null;
+                }
+                else
+                    return BadRequest();        //Type不为学生/老师，说明访问错误
+                                                //记录性别
+                if (json.Gender == "male")
+                    user.Gender = Gender.Male;
+                else
+                    user.Gender = Gender.Female;
 
-            return NoContent();
+                // Update database
+                // 调用UserService中的UpdateUserByUserId方法
+                _userService.UpdateUserByUserId(User.Id(), user);
+
+                return NoContent();
+
+            }
+            // 如果用户不存在，返回404
+            catch (UserNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         // POST: /signin
         [HttpPost("signin")]
         public IActionResult Signin([FromBody] dynamic json)
         {
-            UserVO curUser = new UserVO
+            try
             {
-                Phone = json.Phone,
-                //Password = json.Passsword
-            };
+                UserInfo curUser = new UserInfo
+                {
+                    Phone = json.Phone,
+                    Password = json.Passsword
+                };
 
-            // Username & Password Autherization
-            // 如果手机号/密码错误
-            if (curUser == null)
+                // 调用LoginService的SignInPhone方法
+                UserInfo signInUser = _loginService.SignInPhone(curUser);
+
+                // 返回SignInResult对象的Json
+                return Json(GenerateJwtAndSignInResult(signInUser));
+            }
+            // 如果用户不存在，返回404
+            catch (UserNotFoundException)
+            {
+                return NotFound();
+            }
+            // 如果手机号/密码错误，返回401
+            catch (PasswordErrorException)
+            {
                 return Unauthorized();
+            }
+        }
 
-            // Get user info from database
-            curUser.Id = 3486;
-            if (curUser.Phone == "18999999999")
-                curUser.Type = "teacher";
-            else
-                curUser.Type = "student";
-
-            // Create Token
-            // Get key from configuration
-            // Generate JWT
-            string jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjaWQiOiJPQTAwMDEiLCJpYXQiOjE0ODI2NTcyODQyMjF9.TeJpy936w610Vrrm+c3+RXouCA9k1AX0Bk8qURkYkdo=";
-            // Set JWT into cookie
-            // Set cookie
-
-            return Ok(curUser);
-            // 怎么传JWT？？？
+        // 用来生成正确登陆后的结果
+        // 要在signin界面和signup界面中存起来！！！
+        private SignInResult GenerateJwtAndSignInResult(UserInfo user)
+        {
+            SignInResult signInResult = new SignInResult
+            {
+                Id = user.Id,
+                Type = user.Type.ToString().ToLower(),
+                Name = user.Name,
+                Jwt = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(_header, new JwtPayload(
+                        null,
+                        null,
+                        new[]
+                        {
+                            new Claim("id", user.Id.ToString()),
+                            new Claim("type", user.Type.ToString().ToLower())
+                        },
+                        null,
+                        DateTime.Now.AddDays(7)
+                    )))      //jwt的有效时间为7天
+            };
+            return signInResult;
         }
 
         // POST: /register
         [HttpPost("register")]
         public IActionResult Register([FromBody] dynamic json)
         {
-            UserVO curUser = new UserVO
+            try
             {
-                Phone = json.Phone,
-                //Password = json.Password
-            };
+                UserInfo curUser = new UserInfo
+                {
+                    Phone = json.Phone,
+                    Password = json.Passsword
+                };
 
-            // Username & Password Autherization
-            // 如果手机号已注册
-            if (curUser == null)
-                return Unauthorized();
+                // 调用LoginService的SignUpPhone方法
+                UserInfo signUpUser = _loginService.SignUpPhone(curUser);
 
-            // Generate user info in database
-            curUser.Id = 3486;
-            curUser.Type = "unbinded";
-            curUser.Name = "";
+                // 返回SignInResult对象的Json
+                return Json(GenerateJwtAndSignInResult(signUpUser));
+            }
+            // 如果注册用的手机号在数据库中存在，返回409
+            catch (PasswordErrorException)
+            {
+                return StatusCode(409);
+            }
+        }
 
-            // Create Token
-            // Get key from configuration
-            // Generate JWT
-            string jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjaWQiOiJPQTAwMDEiLCJpYXQiOjE0ODI2NTcyODQyMjF9.TeJpy936w610Vrrm+c3+RXouCA9k1AX0Bk8qURkYkdo=";
-            // Set JWT into cookie
-            // Set cookie
-
-            return Ok(curUser);
-            // 怎么传JWT？？？
+        public class SignInResult
+        {
+            public long Id { get; set; }
+            public string Type { get; set; }
+            public string Name { get; set; }
+            public string Jwt { get; set; }
         }
     }
 }

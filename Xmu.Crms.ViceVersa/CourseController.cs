@@ -5,24 +5,32 @@ using Xmu.Crms.Shared.Service;
 using Xmu.Crms.Shared.Exceptions;
 using System;
 using Xmu.Crms.Web.ViceVersa.VO;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
-    [Route("/Course")]
+    [Route("/course")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CourseController : Controller
     {
         private readonly ICourseService _iCourseService;
         private readonly IClassService _iClassService;
-        //private readonly IUserService _iUserService;
+        private readonly IUserService _iUserService;
+        private readonly ISeminarService _iSeminarService;
+        private readonly ITopicService _iTopicService;
+        private readonly IGradeService _iGradeService;
 
-        public CourseController(ICourseService iCourseService, IClassService iClassService)
+        public CourseController(ICourseService iCourseService, IClassService iClassService, IUserService iUserService, ISeminarService iSeminarService, ITopicService iTopicService, IGradeService iGradeService)
         {
             _iClassService = iClassService;
             _iCourseService = iCourseService;
-            //_iUserService = iUserService;
+            _iUserService = iUserService;
+            _iSeminarService = iSeminarService;
+            _iTopicService = iTopicService;
+            _iGradeService = iGradeService;
         }
-
 
         // GET: /course
         [HttpGet]
@@ -32,7 +40,7 @@ namespace Xmu.Crms.ViceVersa
             try
             {
                 //根据教师id获得其教的所有课程
-                IList<Course> courseList = _iCourseService.ListCourseByUserId(1);  //JWT???
+                IList<Course> courseList = _iCourseService.ListCourseByUserId(User.Id());
                 //针对每个课程查询具体信息
                 courseVOList = new List<CourseVO>();
                 foreach (var i in courseList)
@@ -45,26 +53,30 @@ namespace Xmu.Crms.ViceVersa
                     foreach (var j in classList)
                     {
                         //将每个班的学生相加
-                        //List<UserInfo> studentList=(List<UserInfo>)_iUserService.ListUserByClassId(j.Id,null,null);   //???
-                        //numStudent += studentList.Count;
+                        List<UserInfo> studentList = (List<UserInfo>)_iUserService.ListUserByClassId(j.Id, null, null);
+                        numStudent += studentList.Count;
                     }
                     CourseVO courseVO = new CourseVO(i, numClass, numStudent);
                     courseVOList.Add(courseVO);
                 }
-            }catch(CourseNotFoundException ec)
-            {
-                return NotFound();
-            }catch(ClassNotFoundException ecl)
-            {
-                return NotFound();
-            }catch(UserNotFoundException eu)
+
+                return Json(courseVOList);
+            }
+            catch(CourseNotFoundException)
             {
                 return NotFound();
             }
-            catch
+            catch (ClassNotFoundException)
             {
+                return NotFound();
             }
-            return Json(courseVOList);
+            catch (UserNotFoundException)
+            {
+                return NotFound();
+            }
+            //catch
+            //{
+            //}
         }
 
 
@@ -72,37 +84,37 @@ namespace Xmu.Crms.ViceVersa
         [HttpPost]
         public IActionResult PostCourse([FromBody]dynamic json)
         {
-            //Authentication
-            //When user's permission denied
-            //if(false)
-            //  return Forbid();
+            // Authentication
+            // 学生无法创建课程，返回403
+            if(User.Type() == Shared.Models.Type.Student)
+                return Forbid();
 
             Course newCourse = null;
-            string uri=null;
+            string uri = null;
             try
             {
                 //Get information from json
                 newCourse = new Course { Name = json.Name, Description = json.Description, StartDate = json.StartTime, EndDate = json.EndTime, ReportPercentage = json.Proportions.Report, PresentationPercentage = json.Proportions.Presentation, FivePointPercentage = json.Proportions.C, FourPointPercentage = json.Proportions.B, ThreePointPercentage = json.Proportions.A };
 
-                //get teacher's id
-                long userId = 1;   //JWT
                 // Store course information in server and generate a id for this new course
-                long courseId = _iCourseService.InsertCourseByUserId(userId, newCourse);
+                long courseId = _iCourseService.InsertCourseByUserId(User.Id(), newCourse);
 
                 // Return course id
                 uri = "/course/" + courseId;
-            }catch(UserNotFoundException eu)
+
+                return Created(uri, newCourse);
+            }
+            catch (UserNotFoundException)
             {
                 return NotFound();
             }
-            catch (ArgumentException ea)
+            catch (ArgumentException)
             {
                 return BadRequest();
             }
-            catch (Exception e)
-            {
-            }
-            return Created(uri, newCourse);
+            //catch (Exception)
+            //{
+            //}
         }
 
 
@@ -116,19 +128,22 @@ namespace Xmu.Crms.ViceVersa
             {
                 Course course = _iCourseService.GetCourseByCourseId(courseId);
                 courseVO = new CourseVO(course);
+
+                return Json(courseVO);
             }
-            catch (CourseNotFoundException ec)
+            //If not found, 返回404
+            catch (CourseNotFoundException)
             {
-                //If not found
                 return NotFound();
-            }catch(ArgumentException ea)
-            {
-                //courseId格式错误
-                return BadRequest();
-            }catch(Exception e)
-            {
             }
-            return Json(courseVO);
+            //courseId格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            //catch (Exception)
+            //{
+            //}
         }
 
 
@@ -136,10 +151,10 @@ namespace Xmu.Crms.ViceVersa
         [HttpPut("{courseId}")]
         public IActionResult PutCourseByCourseId(int courseId, [FromBody]dynamic json)
         {
-            //Authentication
-            //When user's permission denied
-            //if(false)
-            //return Forbid();
+            // Authentication
+            // 学生无法修改课程，返回403
+            if (User.Type() == Shared.Models.Type.Student)
+                return Forbid();
 
             try
             {
@@ -147,16 +162,19 @@ namespace Xmu.Crms.ViceVersa
                 Course editedCourse = new Course { Name = json.Name, Description = json.Description, StartDate = json.StartTime, EndDate = json.EndTime };
 
                 //Change information in database
+                //怎样验证该userId有权限修改该courseId???
                 _iCourseService.UpdateCourseByCourseId(courseId, editedCourse);
-            }catch(CourseNotFoundException ec)
+
+                //Success
+                return NoContent();
+            }
+            catch (CourseNotFoundException)
             {
                 return NotFound();
-            }catch(Exception e)
-            {
-
             }
-            //Success
-            return NoContent();
+            //catch (Exception)
+            //{
+            //}
         }
 
 
@@ -164,140 +182,214 @@ namespace Xmu.Crms.ViceVersa
         [HttpDelete("{courseId}")]
         public IActionResult DeleteCourseByCourseId(int courseId)
         {
-            //Authentication
-            //When user's permission denied
-            //if(false)
-            //  return Forbid();
+            // Authentication
+            // 学生无法删除课程，返回403
+            if (User.Type() == Shared.Models.Type.Student)
+                return Forbid();
 
             try
             {
                 //Delete course from database
+                //怎样验证该userId有权限删除该courseId???
                 _iCourseService.DeleteCourseByCourseId(courseId);
-            }catch(CourseNotFoundException ec)
+
+                //Success
+                return NoContent();
+            }
+            // 未找到课程，返回404
+            catch (CourseNotFoundException)
             {
                 return NotFound();
-            }catch(ArgumentException ea)
+            }
+            //错误的ID格式，返回400
+            catch (ArgumentException)
             {
                 return BadRequest();
-            }catch(Exception e)
-            {
             }
-            //Success
-            return NoContent();
+            //catch (Exception)
+            //{
+            //}
         }
 
-        //        // GET: /course/{courseId}/class
-        //        [HttpGet("{courseId}/class")]
-        //        public IActionResult GetClassList(int courseId)
-        //        {
-        //            // Fetch data from database
-        //            List<Class> classes = new List<Class>
-        //            {
-        //                new Class { Id = 45, Name = "周三1-2节" },
-        //                new Class { Id = 48, Name = "周三3-4节" }
-        //            };
+        // GET: /course/{courseId}/class
+        [HttpGet("{courseId}/class")]
+        public IActionResult GetClassList(int courseId)
+        {
+            try
+            {
+                // Fetch data from database
+                // 调用ClassService的方法
+                IList<ClassInfo> classList = _iClassService.ListClassByCourseId(courseId);
 
-        //            // If not found
-        //            if (classes == null)
-        //                return NotFound();
+                List<ClassVO> classes = new List<ClassVO>();
+                foreach (ClassInfo i in classList)
+                    classes.Add(i);
 
-        //            // Success
-        //            return Json(classes);
-        //        }
+                // Success
+                return Json(classes);
+            }
+            // 未找到课程，返回404
+            catch (CourseNotFoundException)
+            {
+                return NotFound();
+            }
+            // 未找到班级，返回404
+            catch (ClassNotFoundException)
+            {
+                return NotFound();
+            }
+            //错误的ID格式，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+        }
 
-        //        // POST: /course/{courseId}/class
-        //        [HttpPost("{courseId}/class")]
-        //        public IActionResult PostNewClass(int courseId, [FromBody]dynamic json)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied
-        //            //if(false)
-        //            //return Forbid();
+        // POST: /course/{courseId}/class
+        [HttpPost("{courseId}/class")]
+        public IActionResult PostNewClass(int courseId, [FromBody]dynamic json)
+        {
+            // Authentication
+            // 学生无法创建班级，返回403
+            if (User.Type() == Shared.Models.Type.Student)
+                return Forbid();
 
-        //            //Get information from json
-        //            GradeProportion proportions = null;
-        //            if (json.Proportions != null && json.Proportions.Report != "" && json.Proportions.Presentation != "" && json.Proportions.C != "" && json.Proportions.B != "" && json.Proportions.A != "")
-        //            {
-        //                proportions = new GradeProportion { Report = json.Proportions.Report, Presentation = json.Proportions.Presentation, C = json.Proportions.C, B = json.Proportions.B, A = json.Proportions.A };
-        //            }
-        //            Class newClass = new Class { Name = json.Name, Site = json.Site, Time = json.Time, Roster = json.Roster, Proportions = proportions };
+            try
+            {
+                //Get information from json
+                GradeProportionVO proportions = null;
+                if (json.Proportions != null && json.Proportions.Report != "" && json.Proportions.Presentation != "" && json.Proportions.C != "" && json.Proportions.B != "" && json.Proportions.A != "")
+                {
+                    proportions = new GradeProportionVO { Report = json.Proportions.Report, Presentation = json.Proportions.Presentation, C = json.Proportions.C, B = json.Proportions.B, A = json.Proportions.A };
+                }
+                // 导入学生名单怎么办？？？
+                ClassInfo newClass = new ClassInfo { Name = json.Name, Site = json.Site, ClassTime = json.Time, ReportPercentage = proportions.Report, PresentationPercentage = proportions.Presentation, FivePointPercentage = proportions.C, FourPointPercentage = proportions.B, ThreePointPercentage = proportions.A };
 
-        //            // Store class information in server and generate a id for this new class
-        //            newClass.Id = 45;
+                // Store class information in server and generate a id for this new class
+                // 这里要改成调CourseService的对应方法!!!
+                long newClassId = _iClassService.InsertClassById(courseId, newClass);
 
-        //            // Return class id
-        //            string uri = "/class/" + newClass.Id;
-        //            return Created(uri, newClass);
-        //        }
+                // Return class id
+                string uri = "/class/" + newClassId;
+                return Created(uri, newClass);
+            }
+            // 未找到课程，返回404
+            catch (CourseNotFoundException)
+            {
+                return NotFound();
+            }
+            // 错误的ID格式，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+        }
 
-        //        // GET: /course/{courseId}/seminar?embedGrade=false
-        //        [HttpGet("{courseId}/seminar")]
-        //        public IActionResult GetSeminarList(int courseId, [FromQuery]bool embedGrade = false)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied
-        //            if(embedGrade != false)
-        //                return BadRequest();
+        // GET: /course/{courseId}/seminar?embedGrade=false
+        // 不需要实现学生查看分数：embed=true ？？？
+        [HttpGet("{courseId}/seminar")]
+        public IActionResult GetSeminarList(int courseId, [FromQuery]bool embedGrade = false)
+        {
+            // Authentication
+            // 若教师设置embedGrade为true，返回400
+            if (User.Type() == Shared.Models.Type.Teacher && embedGrade == true)
+                return BadRequest();
 
-        //            // Fetch data from database
-        //            List<Seminar> seminars = new List<Seminar>();
-        //            if (embedGrade == false)
-        //            {
-        //                seminars.Add(new Seminar { Id = 45, Name = "界面原型设计", Description = "界面原型设计", GroupingMethod = "fixed", StartTime = "25/09/2017", EndTime = "09/10/2017" });
-        //                seminars.Add(new Seminar { Id = 48, Name = "概要设计", Description = "模型层与数据库设计", GroupingMethod = "fixed", StartTime = "10/10/2017", EndTime = "24/10/2017" });
-        //            }
+            try
+            {
+                // Fetch data from database
+                IList<Seminar> seminarList = _iSeminarService.ListSeminarByCourseId(courseId);
 
-        //            // If not found
-        //            if (seminars == null)
-        //                return NotFound();
+                List<SeminarVO> seminars = new List<SeminarVO>();
+                foreach (Seminar i in seminarList)
+                    if (embedGrade == false)
+                    {
+                        seminars.Add(i);
+                    }
 
-        //            // Success
-        //            return Json(seminars);
-        //        }
+                // Success
+                return Json(seminars);
+            }
+            // 未找到课程，返回404
+            catch (CourseNotFoundException)
+            {
+                return NotFound();
+            }
+            // 错误的ID格式，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+        }
 
-        //        // POST: /course/{courseId}/seminar
-        //        [HttpPost("{courseId}/seminar")]
-        //        public IActionResult PostNewSeminar(int courseId, [FromBody]dynamic json)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied
-        //            //if(false)
-        //            //return Forbid();
+        // POST: /course/{courseId}/seminar
+        [HttpPost("{courseId}/seminar")]
+        public IActionResult PostNewSeminar(int courseId, [FromBody]dynamic json)
+        {
+            // Authentication
+            // 学生无法创建讨论课，返回403
+            if (User.Type() == Shared.Models.Type.Student)
+                return Forbid();
 
-        //            //Get information from json
-        //            GradeProportion proportions = null;
-        //            if (json.Proportions != null && json.Proportions.Report != "" && json.Proportions.Presentation != "" && json.Proportions.C != "" && json.Proportions.B != "" && json.Proportions.A != "")
-        //            {
-        //                proportions = new GradeProportion { Report = json.Proportions.Report, Presentation = json.Proportions.Presentation, C = json.Proportions.C, B = json.Proportions.B, A = json.Proportions.A };
-        //            }
-        //            Seminar newSeminar = new Seminar { Name = json.Name, Description = json.Description, GroupingMethod = json.GroupingMethod, StartTime = json.StartTime, EndTime = json.EndTime, Proportions = proportions };
+            try
+            {
+                //Get information from json
+                // 所以获得的组内限制和组内人数上限存在哪个实体里？？？
+                Seminar newSeminar;
+                if (json.GroupingMethod == "固定分组")
+                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = true, StartTime = json.StartTime, EndTime = json.EndTime };
+                else
+                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = false, StartTime = json.StartTime, EndTime = json.EndTime };
 
-        //            // Store seminar information in server and generate a id for this new seminar
-        //            newSeminar.Id = 32;
+                // Store seminar information in server and generate a id for this new seminar
+                long newSeminarId = _iSeminarService.InsertSeminarByCourseId(courseId, newSeminar);
 
-        //            // Return seminar id
-        //            string uri = "/seminar/" + newSeminar.Id;
-        //            return Created(uri, newSeminar);
-        //        }
+                // Return seminar id
+                string uri = "/seminar/" + newSeminar.Id;
+                return Created(uri, newSeminar);
+            }
+            // 未找到课程，返回404
+            catch (CourseNotFoundException)
+            {
+                return NotFound();
+            }
+            // 错误的ID格式，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+        }
 
-        //        // GET: /course/{courseId}/grade
-        //        [HttpGet("{courseId}/grade")]
-        //        public IActionResult GetStudentGradeUnderAllSeminar(int courseId)
-        //        {
-        //            // Fetch data from database
-        //            List<SeminarGradeDetail> seminarGrades = new List<SeminarGradeDetail>
-        //            {
-        //                new SeminarGradeDetail { SeminarName = "需求分析", GroupName = "3A2", LeaderName = "张三", PresentationGrade = 4, ReportGrade = 4, Grade = 4 },
-        //                new SeminarGradeDetail { SeminarName = "界面原型设计", GroupName = "3A3", LeaderName = "张三", PresentationGrade = 5, ReportGrade = 5, Grade = 5 }
-        //            };
+        // GET: /course/{courseId}/grade
+        [HttpGet("{courseId}/grade")]
+        public IActionResult GetStudentGradeUnderAllSeminar(int courseId)
+        {
+            try
+            {
+                // Fetch data from database
+                IList<SeminarGroup> seminarGroupList = _iGradeService.ListSeminarGradeByCourseId(User.Id(), courseId);
 
-        //            // If not found
-        //            if (seminarGrades == null)
-        //                return NotFound();
+                // GroupName合不成，我完成不来 !!!
+                List<SeminarGradeDetailVO> seminarGrades = new List<SeminarGradeDetailVO>();
+                foreach(SeminarGroup i in seminarGroupList)
+                {
+                    SeminarGradeDetailVO seminarGradeDetailVO = new SeminarGradeDetailVO { SeminarName = i.Seminar.Name, GroupName = i.Id.ToString(), LeaderName = i.Leader.Name, PresentationGrade = (int)i.PresentationGrade, ReportGrade = (int)i.ReportGrade, Grade = (int)i.FinalGrade };
+                    seminarGrades.Add(seminarGradeDetailVO);
+                }
 
-        //            // Success
-        //            return Json(seminarGrades);
-        //        }
-
+                // Success
+                return Json(seminarGrades);
+            }
+            // 未找到课程，返回404
+            catch (CourseNotFoundException)
+            {
+                return NotFound();
+            }
+            // 错误的ID格式，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+        }
     }
 }

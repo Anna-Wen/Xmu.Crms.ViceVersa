@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Xmu.Crms.Shared.Models;
 using Xmu.Crms.Shared.Service;
 using Xmu.Crms.Shared.Exceptions;
+using Xmu.Crms.Web.ViceVersa.VO;
 
 namespace Xmu.Crms.ViceVersa
 {
@@ -38,16 +39,16 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
-            _classService.DeleteClassByCourseId(2);
-            return Json(1);
-            //try
-            //{
-            //    ClassInfo classinfo = _classService.GetClassByClassId(classId);
-            //    // Success
-            //    return Json(classinfo);
-            //}
-            //catch (ClassNotFoundException) { return NotFound(); }
-            
+
+            try
+            {
+                ClassInfo classinfo = _classService.GetClassByClassId(classId);
+                ClassVO classVO = classinfo;
+                // Success
+                return Json(classVO);
+            }
+            catch (ClassNotFoundException) { return NotFound(); }
+
         }
 
         //        // PUT: /class/{classId}

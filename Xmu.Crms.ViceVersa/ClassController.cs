@@ -30,14 +30,14 @@ namespace Xmu.Crms.ViceVersa
                 // Success
                 return Json(classList);
             }
-            catch(ClassNotFoundException) { return NotFound(); }
+            catch(CourseNotFoundException) { return NotFound(); }
+            catch (UserNotFoundException) { return NotFound(); }
         }
 
         // GET: /class/{classId}
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
-
             try
             {
                 ClassInfo classinfo = _classService.GetClassByClassId(classId);
@@ -45,6 +45,7 @@ namespace Xmu.Crms.ViceVersa
                 return Json(classinfo);
             }
             catch (ClassNotFoundException) { return NotFound(); }
+            
         }
 
         //        // PUT: /class/{classId}

@@ -37,14 +37,14 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
-            return Json( _classService.GetCallStatusById(1, 1));
-            //try
-            //{
-            //    ClassInfo classinfo = _classService.GetClassByClassId(classId);
-            //    // Success
-            //    return Json(classinfo);
-            //}
-            //catch (ClassNotFoundException) { return NotFound(); }
+
+            try
+            {
+                ClassInfo classinfo = _classService.GetClassByClassId(classId);
+                // Success
+                return Json(classinfo);
+            }
+            catch (ClassNotFoundException) { return NotFound(); }
         }
 
         //        // PUT: /class/{classId}

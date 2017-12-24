@@ -37,13 +37,14 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
-            try
-            {
-                ClassInfo classinfo = _classService.GetClassByClassId(classId);
-                // Success
-                return Json(classinfo);
-            }
-            catch (ClassNotFoundException) { return NotFound(); }
+            return DeleteStudentUnderClass(3, 91);
+            //try
+            //{
+            //    ClassInfo classinfo = _classService.GetClassByClassId(classId);
+            //    // Success
+            //    return Json(classinfo);
+            //}
+            //catch (ClassNotFoundException) { return NotFound(); }
         }
 
         //        // PUT: /class/{classId}
@@ -93,35 +94,36 @@ namespace Xmu.Crms.ViceVersa
 
 
 
-        //// Post: /class/{classId}/student
-        //[HttpPost("{classId}/student")]
-        //public IActionResult PostStudentUnderClass(int classId, [FromBody]dynamic json)
-        //{
-        //    try
-        //    {
-        //        //Authentication
-        //        //When user's permission denied
-        //        //if(false)
-        //        //  return Forbid();
+        // Post: /class/{classId}/student
+        [HttpPost("{classId}/student")]
+        public IActionResult PostStudentUnderClass(int classId, [FromBody]dynamic json)
+        {
+            try
+            {
+                //Authentication
+                //When user's permission denied
+                //if(false)
+                //  return Forbid();
 
-        //        // Get information from json
-        //        //Student newStudentInClass = new Student { Id = json.Id };
+                // Get information from json
+                //Student newStudentInClass = new Student { Id = json.Id };
 
-        //        // Judge and store class-student information in server
+                // Judge and store class-student information in server
 
-        //        // If already select another class under the same course
+                // If already select another class under the same course
 
-        //        //找到该班级所属课程下的所有班级
-        //        IList<ClassInfo> classList = _classService.ListClassByCourseId(classinfo.Course.Id);
-               
-        //        //  return Conflict(); 
+                var userId = 8;
+                _classService.InsertCourseSelectionById(userId, classId);
+                return Json(1);
+                //  return Conflict(); 
 
-        //        // Return class id & student id
-        //        string uri = "/class/" + classId + "/student/" + newStudentInClass.Id;
-        //        return Created(uri, newStudentInClass);
-        //    }
-        //    catch { }
-        //}
+                // Return class id & student id
+                //string uri = "/class/" + classId + "/student/" + newStudentInClass.Id;
+                //return Created(uri, newStudentInClass);
+            }
+            catch (UserNotFoundException){ return NotFound(); }
+            catch (ClassNotFoundException) { return NotFound(); }
+        }
 
 
         // DELETE: /class/{classId}/student/{studentId}
@@ -138,7 +140,7 @@ namespace Xmu.Crms.ViceVersa
                 _classService.DeleteCourseSelectionById(studentId, classId);
 
                 //Success
-                return NoContent();
+                return Json(1);
             }
             catch(UserNotFoundException) { return NotFound(); }
             catch (ClassNotFoundException) { return NotFound(); }

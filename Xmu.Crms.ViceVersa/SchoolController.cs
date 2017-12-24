@@ -9,6 +9,12 @@ namespace Xmu.Crms.ViceVersa
     [Route("/school")]
     public class SchoolController : Controller
     {
+        public readonly IGradeService _igradeService;
+
+        public SchoolController(IGradeService igradeService)
+        {
+            _igradeService = igradeService;
+        }
 
         // GET: /school?city={city}
         [HttpGet]
@@ -55,6 +61,7 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("province")]
         public IActionResult GetProvince()
         {
+            _igradeService.CountPresentationGrade(1,1);//===============
             // Fetch province list from database
             List<string> provinceList = new List<string> { "北京", "天津", "上海", "重庆", "河北", "山西", "辽宁", "吉林", "黑龙江", "江苏", "浙江", "安徽", "福建", "江西", "山东", "河南", "湖北", "湖南", "广东", "海南", "四川", "贵州", "云南", "陕西", "甘肃", "青海", "台湾", "内蒙古自治区", "广西壮族自治区", "西藏自治区", "宁夏回族自治区", "新疆维吾尔自治区", "香港特别行政区", "澳门特别行政区" };
 

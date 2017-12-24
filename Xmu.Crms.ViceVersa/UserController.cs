@@ -52,22 +52,16 @@ namespace Xmu.Crms.ViceVersa
         {
             School xmu = new School { Id = 12, Name = "厦门大学", Province = "福建", City = "厦门" };
             UserVO dataUser = new UserVO();
+            dataUser.Type = json.Type;
+            dataUser.Name = json.Name;
+            dataUser.Number = json.Number;
+            dataUser.Gender = json.Gender;
+            dataUser.Title = json.Title;
+            dataUser.Avatar = json.Avatar;
 
-            if (dataUser == null)
-                return BadRequest();
-            else
-            {
-                dataUser.Type = json.Type;
-                dataUser.Name = json.Name;
-                dataUser.Number = json.Number;
-                dataUser.Gender = json.Gender;
-                dataUser.Title = json.Title;
-                dataUser.Avatar = json.Avatar;
+            // Update database
 
-                // Update database
-
-                return NoContent();
-            }
+            return NoContent();
         }
 
         // POST: /signin
@@ -77,7 +71,7 @@ namespace Xmu.Crms.ViceVersa
             UserVO curUser = new UserVO
             {
                 Phone = json.Phone,
-                Password = json.Passsword
+                //Password = json.Passsword
             };
 
             // Username & Password Autherization
@@ -110,7 +104,7 @@ namespace Xmu.Crms.ViceVersa
             UserVO curUser = new UserVO
             {
                 Phone = json.Phone,
-                Password = json.Password
+                //Password = json.Password
             };
 
             // Username & Password Autherization

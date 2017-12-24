@@ -37,7 +37,7 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
-            return DeleteStudentUnderClass(3, 91);
+            return Json( _classService.GetCallStatusById(1, 1));
             //try
             //{
             //    ClassInfo classinfo = _classService.GetClassByClassId(classId);

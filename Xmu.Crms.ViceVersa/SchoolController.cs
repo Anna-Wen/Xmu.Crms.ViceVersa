@@ -9,7 +9,6 @@ namespace Xmu.Crms.ViceVersa
     [Route("/school")]
     public class SchoolController : Controller
     {
-
         // GET: /school?city={city}
         [HttpGet]
         public IActionResult GetSchoolViaCity([FromQuery]string city)

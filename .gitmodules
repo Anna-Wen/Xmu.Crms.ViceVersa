@@ -5,8 +5,8 @@
 [submodule "Xmu.Crms.Services.ViceVersa"]
 	path = Xmu.Crms.Services.ViceVersa
 	url = https://github.com/Anna-Wen/Xmu.Crms.Services.ViceVersa.git
-	branch = JJ's
+	branch = master
 [submodule "Xmu.Crms.Web.ViceVersa"]
 	path = Xmu.Crms.Web.ViceVersa
 	url = https://github.com/Anna-Wen/Xmu.Crms.Web.ViceVersa.git
-	branch = JJ's
+	branch = master

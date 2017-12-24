@@ -50,30 +50,24 @@ namespace Xmu.Crms.ViceVersa
 
         }
 
-        //        // PUT: /class/{classId}
-        //        [HttpPut("{classId}")]
-        //        public IActionResult PutClass(int classId, [FromBody]dynamic json)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied
-        //            //if(false)
-        //            //  return Forbid();
+        // PUT: /class/{classId}
+        [HttpPut("{classId}")]
+        public IActionResult PutClass(int classId, [FromBody]dynamic json)
+        {
+            //Authentication
+            //When user's permission denied
+            //if(false)
+            //  return Forbid();
 
-        //            //Get information from json
-        //            GradeProportion proportions = null;
-        //            if (json.Proportions != null && json.Proportions.Report != "" && json.Proportions.Presentation != "" && json.Proportions.C != "" && json.Proportions.B != "" && json.Proportions.A != "")
-        //            {
-        //                proportions = new GradeProportion { Report = json.Proportions.Report, Presentation = json.Proportions.Presentation, C = json.Proportions.C, B = json.Proportions.B, A = json.Proportions.A };
-        //            }
-        //            Class editedClass = new Class { Name = json.Name, Site = json.Site, Time = json.Time, Proportions = proportions };
+            //Get information from json
+           
+            //Change information in database
+            //if not found
+            //    return NotFound();
 
-        //            //Change information in database
-        //            //if not found
-        //            //    return NotFound();
-
-        //            //Success
-        //            return NoContent();
-        //        }
+            //Success
+            return NoContent();
+        }
 
         // DELETE: /class/{classId}
         [HttpDelete("{classId}")]

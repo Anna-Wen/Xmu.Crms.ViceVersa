@@ -21,15 +21,17 @@ namespace Xmu.Crms.ViceVersa
         private readonly ISeminarService _iSeminarService;
         private readonly ITopicService _iTopicService;
         private readonly IGradeService _iGradeService;
+        private readonly ISeminarGroupService _iSeminarGroupService;
 
-        public CourseController(ICourseService iCourseService, IClassService iClassService, IUserService iUserService, ISeminarService iSeminarService, ITopicService iTopicService, IGradeService iGradeService)
+        public CourseController(ICourseService iCourseService, IClassService iClassService, IUserService iUserService, ISeminarService iSeminarService, ITopicService iTopicService, IGradeService iGradeService, ISeminarGroupService iSeminarGroupService)
         {
-            _iClassService = iClassService;
             _iCourseService = iCourseService;
+            _iClassService = iClassService;
             _iUserService = iUserService;
             _iSeminarService = iSeminarService;
             _iTopicService = iTopicService;
             _iGradeService = iGradeService;
+            _iSeminarGroupService = iSeminarGroupService;
         }
 
         // GET: /course
@@ -368,11 +370,36 @@ namespace Xmu.Crms.ViceVersa
                 // Fetch data from database
                 IList<SeminarGroup> seminarGroupList = _iGradeService.ListSeminarGradeByCourseId(User.Id(), courseId);
 
-                // GroupName合不成，我完成不来 !!!
+                // 转换为SeminarGradeDetailVO的List对象
                 List<SeminarGradeDetailVO> seminarGrades = new List<SeminarGradeDetailVO>();
                 foreach(SeminarGroup i in seminarGroupList)
                 {
-                    SeminarGradeDetailVO seminarGradeDetailVO = new SeminarGradeDetailVO { SeminarName = i.Seminar.Name, GroupName = i.Id.ToString(), LeaderName = i.Leader.Name, PresentationGrade = (int)i.PresentationGrade, ReportGrade = (int)i.ReportGrade, Grade = (int)i.FinalGrade };
+                    // 为了获得GroupName，要先建一个GroupVO实体
+                    GroupVO g = i;
+
+                    //获取Members
+                    IList<UserInfo> memberList = _iSeminarGroupService.ListSeminarGroupMemberByGroupId(i.Id);
+                    List<UserVO> members = new List<UserVO>();
+                    foreach (UserInfo u in memberList)
+                        members.Add(u);
+                    g.Members = members;
+
+                    //获取Topics和PresentationGrade
+                    IList<SeminarGroupTopic> seminarGroupTopicList = _iTopicService.ListSeminarGroupTopicByGroupId(i.Id);
+                    List<TopicVO> topics = new List<TopicVO>();
+                    List<int> pGrades = new List<int>();
+                    foreach (SeminarGroupTopic sgt in seminarGroupTopicList)
+                    {
+                        topics.Add(sgt.Topic);
+                        pGrades.Add((int)sgt.PresentationGrade);
+                    }
+                    g.Topics = topics;
+                    g.Grade.PresentationGrade = pGrades;
+
+                    //获取Name
+                    g.GetName();
+
+                    SeminarGradeDetailVO seminarGradeDetailVO = new SeminarGradeDetailVO { SeminarName = i.Seminar.Name, GroupName = g.Name, LeaderName = i.Leader.Name, PresentationGrade = (int)i.PresentationGrade, ReportGrade = (int)i.ReportGrade, Grade = (int)i.FinalGrade };
                     seminarGrades.Add(seminarGradeDetailVO);
                 }
 

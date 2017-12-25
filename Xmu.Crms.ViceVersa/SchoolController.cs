@@ -50,18 +50,29 @@ namespace Xmu.Crms.ViceVersa
         [HttpPost]
         public IActionResult PostNewSchool([FromBody]dynamic json)
         {
-            // Get information from json
-            SchoolVO newSchool = new SchoolVO { Name = json.Name, Province = json.Province, City = json.City };
+            try
+            {
+                // Get information from json
+                School newSchool = new School { Name = json.Name, Province = json.Province, City = json.City };
 
-            // Judge and store school information in server
-            newSchool.Id = 38;
-            
-            // If already has a school with the same name
-            //  return Conflict(); 
-
-            // Return school id
-            string uri = "/school/" + newSchool.Id;
-            return Created(uri, newSchool);
+                //Get all the schools in the same city
+                IList<School> schoolList = _iSchoolService.ListSchoolByCity(json.City);
+                foreach(var school in schoolList)
+                {
+                    // If already has a school with the same name
+                    if (school.Name.Equals(newSchool.Name))
+                        return StatusCode(409); // Conflict();
+                }
+                //Insert new school
+                long schoolId = _iSchoolService.InsertSchool(newSchool);
+                // Return school id
+                string uri = "/school/" + schoolId;
+                return Created(uri, newSchool);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
         // GET: /school/province

@@ -266,8 +266,7 @@ namespace Xmu.Crms.ViceVersa
                 ClassInfo newClass = new ClassInfo { Name = json.Name, Site = json.Site, ClassTime = json.Time, ReportPercentage = proportions.Report, PresentationPercentage = proportions.Presentation, FivePointPercentage = proportions.C, FourPointPercentage = proportions.B, ThreePointPercentage = proportions.A };
 
                 // Store class information in server and generate a id for this new class
-                // 这里要改成调CourseService的对应方法!!!
-                long newClassId = _iClassService.InsertClassById(courseId, newClass);
+                long newClassId = _iCourseService.InsertClassById(courseId, newClass);
 
                 // Return class id
                 string uri = "/class/" + newClassId;

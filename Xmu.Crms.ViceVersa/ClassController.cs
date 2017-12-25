@@ -5,35 +5,69 @@ using Xmu.Crms.Shared.Service;
 using Xmu.Crms.Shared.Exceptions;
 using Xmu.Crms.Web.ViceVersa.VO;
 using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
     [Route("/class")]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ClassController : Controller
     {
         private readonly IClassService _classService;
         private readonly ICourseService _courseService;
+        private readonly IUserService _userService;
 
-           public ClassController(IClassService classService)
+           public ClassController(IClassService classService,ICourseService courseService)
         {
             _classService = classService;
+            _courseService = courseService;
         }
 
         // GET: /class?courseName={courseName}&courseTeacher={courseTeacher}
         [HttpGet]
         public IActionResult GetClassListFromQuery([FromQuery]string courseName, [FromQuery]string courseTeacher)
         {
-            try
+            if (courseName == null && courseTeacher == null)
             {
-                // Fetch selected class list from database
-                IList<ClassInfo> classList = _courseService.ListClassByName(courseName, courseTeacher);
-                
+                //IList<ClassInfo> classList = _classService.ListClassByUserId(User.Id());
+                IList<ClassInfo> classList = _classService.ListClassByUserId(4);//测试数据
+
+                List<CourseClassVO> classes = new List<CourseClassVO>();
+                foreach (ClassInfo c in classList)
+                    classes.Add(new CourseClassVO(c,0));
+
                 // Success
-                return Json(classList);
+                return Json(classes);
             }
-            catch(CourseNotFoundException) { return NotFound(); }
-            catch (UserNotFoundException) { return NotFound(); }
+            else
+            {
+                try
+                {
+                    // Fetch selected class list from database
+                    IList<ClassInfo> classList = _courseService.ListClassByName(courseName, courseTeacher);
+
+
+                    List<CourseClassVO> classes = new List<CourseClassVO>();
+                    foreach (ClassInfo c in classList)
+                    {
+                        //计算该班级共有多少个学生
+                        //List<UserInfo> studentList = (List<UserInfo>)_userService.ListUserByClassId(c.Id, null, null);
+                        //CourseClassVO courseClassVO = new CourseClassVO(c, studentList.Count);
+                        
+                        //测试数据
+                        CourseClassVO courseClassVO = new CourseClassVO(c, 0);
+
+                        classes.Add(courseClassVO);
+                    }
+
+                    // Success
+                    return Json(classes);
+                }
+                catch (CourseNotFoundException) { return NotFound(); }
+                catch (UserNotFoundException) { return NotFound(); }
+            }
         }
 
         // GET: /class/{classId}

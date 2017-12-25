@@ -336,15 +336,15 @@ namespace Xmu.Crms.ViceVersa
                 // 所以获得的组内限制和组内人数上限存在哪个实体里？？？
                 Seminar newSeminar;
                 if (json.GroupingMethod == "固定分组")
-                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = true, StartTime = json.StartTime, EndTime = json.EndTime };
+                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = true, StartTime = Convert.ToDateTime(json.StartTime), EndTime = Convert.ToDateTime(json.EndTime) };
                 else
-                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = false, StartTime = json.StartTime, EndTime = json.EndTime };
+                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = false, StartTime = Convert.ToDateTime(json.StartTime), EndTime = Convert.ToDateTime(json.EndTime) };
 
                 // Store seminar information in server and generate a id for this new seminar
                 long newSeminarId = _iSeminarService.InsertSeminarByCourseId(courseId, newSeminar);
 
                 // Return seminar id
-                string uri = "/seminar/" + newSeminar.Id;
+                string uri = "/seminar/" + newSeminarId;
                 return Created(uri, newSeminar);
             }
             // 未找到课程，返回404

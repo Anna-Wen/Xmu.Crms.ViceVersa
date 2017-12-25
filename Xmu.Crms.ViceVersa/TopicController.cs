@@ -27,7 +27,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /topic/{topicId}
         [HttpGet("{topicId}")]
-        public IActionResult GetTopic(int topicId)
+        public IActionResult GetTopic(long topicId)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Xmu.Crms.ViceVersa
 
         // PUT: /topic/{topicId}
         [HttpPut("{topicId}")]
-        public IActionResult PutTopic(int topicId, [FromBody]dynamic json)
+        public IActionResult PutTopic(long topicId, [FromBody]dynamic json)
         {
             // Authentication
             // 学生无法修改话题，返回403
@@ -91,7 +91,7 @@ namespace Xmu.Crms.ViceVersa
 
         // DELETE: /topic/{topicId}
         [HttpDelete("{topicId}")]
-        public IActionResult DeleteTopic(int topicId)
+        public IActionResult DeleteTopic(long topicId)
         {
             // Authentication
             // 学生无法删除话题，返回403
@@ -121,7 +121,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /topic/{topicId}/group
         [HttpGet("{topicId}/group")]
-        public IActionResult GetGroupsUnderTopic(int topicId)
+        public IActionResult GetGroupsUnderTopic(long topicId)
         {
             try
             {

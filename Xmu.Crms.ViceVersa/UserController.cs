@@ -52,7 +52,7 @@ namespace Xmu.Crms.ViceVersa
         // PUT: /me
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("me")]
-        public IActionResult Put(int id, [FromBody] dynamic json)
+        public IActionResult Put(long id, [FromBody] dynamic json)
         {
             try
             {

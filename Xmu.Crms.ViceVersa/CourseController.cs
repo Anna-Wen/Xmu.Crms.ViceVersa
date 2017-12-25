@@ -122,7 +122,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /course/{courseId}
         [HttpGet("{courseId}")]
-        public IActionResult GetCourseByCourseId(int courseId)
+        public IActionResult GetCourseByCourseId(long courseId)
         {
             // Fetch data from database
             CourseVO courseVO = null;
@@ -151,7 +151,7 @@ namespace Xmu.Crms.ViceVersa
 
         // PUT: /course/{courseId}
         [HttpPut("{courseId}")]
-        public IActionResult PutCourseByCourseId(int courseId, [FromBody]dynamic json)
+        public IActionResult PutCourseByCourseId(long courseId, [FromBody]dynamic json)
         {
             // Authentication
             // 学生无法修改课程，返回403
@@ -182,7 +182,7 @@ namespace Xmu.Crms.ViceVersa
 
         // DELETE: /course/{courseId}
         [HttpDelete("{courseId}")]
-        public IActionResult DeleteCourseByCourseId(int courseId)
+        public IActionResult DeleteCourseByCourseId(long courseId)
         {
             // Authentication
             // 学生无法删除课程，返回403
@@ -215,7 +215,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /course/{courseId}/class
         [HttpGet("{courseId}/class")]
-        public IActionResult GetClassList(int courseId)
+        public IActionResult GetClassList(long courseId)
         {
             try
             {
@@ -249,7 +249,7 @@ namespace Xmu.Crms.ViceVersa
 
         // POST: /course/{courseId}/class
         [HttpPost("{courseId}/class")]
-        public IActionResult PostNewClass(int courseId, [FromBody]dynamic json)
+        public IActionResult PostNewClass(long courseId, [FromBody]dynamic json)
         {
             // Authentication
             // 学生无法创建班级，返回403
@@ -289,7 +289,7 @@ namespace Xmu.Crms.ViceVersa
         // GET: /course/{courseId}/seminar?embedGrade=false
         // 不需要实现学生查看分数：embed=true ？？？
         [HttpGet("{courseId}/seminar")]
-        public IActionResult GetSeminarList(int courseId, [FromQuery]bool embedGrade = false)
+        public IActionResult GetSeminarList(long courseId, [FromQuery]bool embedGrade = false)
         {
             // Authentication
             // 若教师设置embedGrade为true，返回400
@@ -325,7 +325,7 @@ namespace Xmu.Crms.ViceVersa
 
         // POST: /course/{courseId}/seminar
         [HttpPost("{courseId}/seminar")]
-        public IActionResult PostNewSeminar(int courseId, [FromBody]dynamic json)
+        public IActionResult PostNewSeminar(long courseId, [FromBody]dynamic json)
         {
             // Authentication
             // 学生无法创建讨论课，返回403
@@ -363,7 +363,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /course/{courseId}/grade
         [HttpGet("{courseId}/grade")]
-        public IActionResult GetStudentGradeUnderAllSeminar(int courseId)
+        public IActionResult GetStudentGradeUnderAllSeminar(long courseId)
         {
             try
             {

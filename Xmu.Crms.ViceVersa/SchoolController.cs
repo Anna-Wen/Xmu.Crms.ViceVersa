@@ -2,34 +2,48 @@
 using Microsoft.AspNetCore.Mvc;
 using Xmu.Crms.Shared.Models;
 using Xmu.Crms.Shared.Service;
+using Xmu.Crms.Web.ViceVersa.VO;
+using System;
 
 namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
     [Route("/school")]
+
     public class SchoolController : Controller
     {
+        public readonly ISchoolService _iSchoolService;
+        public SchoolController(ISchoolService iSchoolService)
+        {
+            _iSchoolService = iSchoolService;
+        }
+
         // GET: /school?city={city}
         [HttpGet]
         public IActionResult GetSchoolViaCity([FromQuery]string city)
         {
-            // Fetch selected class list from database
-            List<School> schoolList = new List<School>
+            //如果还没有选择城市，则不能触发这个controller选项
+            try
             {
-                new School { Id = 32, Name = "厦门大学", Province = "福建", City = "厦门" },
-                new School { Id = 37, Name = "集美大学", Province = "福建", City = "厦门" },
-                new School { Id = 45, Name = "中山大学", Province = "广东", City = "广州" },
-                new School { Id = 56, Name = "北京大学", Province = "北京", City = "北京" }
-            };
-            if (city != null && city != "")
-                schoolList = schoolList.FindAll((p) => p.City.StartsWith(city));
+                // Fetch selected class list from database
+                IList<School> schoolList = _iSchoolService.ListSchoolByCity(city);
+                List<SchoolVO> schools = new List<SchoolVO>();
+                foreach (var school in schoolList)
+                {
+                    schools.Add(school);
+                }
+                // If school not found
+                if (schoolList == null)
+                    return NotFound();
 
-            // If school not found
-            if (schoolList == null)
-                return NotFound();
-            
-            // Success
-            return Json(schoolList);
+                // Success
+                return Json(schools);
+            }
+            //错误的ID格式，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
         
         // POST: /school
@@ -37,7 +51,7 @@ namespace Xmu.Crms.ViceVersa
         public IActionResult PostNewSchool([FromBody]dynamic json)
         {
             // Get information from json
-            School newSchool = new School { Name = json.Name, Province = json.Province, City = json.City };
+            SchoolVO newSchool = new SchoolVO { Name = json.Name, Province = json.Province, City = json.City };
 
             // Judge and store school information in server
             newSchool.Id = 38;

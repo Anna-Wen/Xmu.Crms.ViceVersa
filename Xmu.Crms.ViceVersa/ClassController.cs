@@ -77,7 +77,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /class/{classId}
         [HttpGet("{classId}")]
-        public IActionResult GetClass(int classId)
+        public IActionResult GetClass(long classId)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace Xmu.Crms.ViceVersa
 
         // PUT: /class/{classId}
         [HttpPut("{classId}")]
-        public IActionResult PutClass(int classId, [FromBody]dynamic json)
+        public IActionResult PutClass(long classId, [FromBody]dynamic json)
         {
             // Authentication
             // 学生无法修改班级，返回403
@@ -167,7 +167,7 @@ namespace Xmu.Crms.ViceVersa
 
         // Post: /class/{classId}/student
         [HttpPost("{classId}/student")]
-        public IActionResult PostStudentUnderClass(int classId, [FromBody]dynamic json)
+        public IActionResult PostStudentUnderClass(long classId, [FromBody]dynamic json)
         {
             //学生无法为他人选课（URL中ID与自身ID不同）
             // if (studentId!=User.Id()) return Forbid();
@@ -192,7 +192,7 @@ namespace Xmu.Crms.ViceVersa
 
         // DELETE: /class/{classId}/student/{studentId}
         [HttpDelete("{classId}/student/{studentId}")]
-        public IActionResult DeleteStudentUnderClass(int classId, int studentId)
+        public IActionResult DeleteStudentUnderClass(long classId, long studentId)
         {
             //学生无法为他人退课（URL中ID与自身ID不同）
            // if (studentId!=User.Id()) return Forbid();
@@ -214,7 +214,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /Class/{classId}/student?numBeginWith={studentNumber}&nameBeginWith={studentName}
         [HttpGet("{classId}/student")]
-        public IActionResult GetStudentListUnderClass(int classId,[FromQuery]string studentNumber, [FromQuery]string studentName)
+        public IActionResult GetStudentListUnderClass(long classId,[FromQuery]string studentNumber, [FromQuery]string studentName)
         {
             try
             {
@@ -236,7 +236,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /class/{classId}/classgroup
         [HttpGet("{classId}/classgroup")]
-        public IActionResult GetClassGroup(int classId)
+        public IActionResult GetClassGroup(long classId)
         {
             //Authentication
             // 教师访问，返回403
@@ -265,7 +265,7 @@ namespace Xmu.Crms.ViceVersa
 
         // PUT: /class/{classId}/classgroup/add
         [HttpPut("{classId}/classgroup/add")]
-        public IActionResult AddMemberIntoClassGroup(int classId, [FromBody]dynamic json)
+        public IActionResult AddMemberIntoClassGroup(long classId, [FromBody]dynamic json)
         {
             try
             {
@@ -291,7 +291,7 @@ namespace Xmu.Crms.ViceVersa
 
         // PUT: /class/{classId}/classgroup/remove
         [HttpPut("{classId}/classgroup/remove")]
-        public IActionResult RemoveMemberIntoClassGroup(int classId, [FromBody]dynamic json)
+        public IActionResult RemoveMemberIntoClassGroup(long classId, [FromBody]dynamic json)
         {
             try
             {

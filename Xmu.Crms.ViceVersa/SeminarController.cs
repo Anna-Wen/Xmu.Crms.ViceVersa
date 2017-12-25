@@ -29,7 +29,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /seminar/{seminarId}
         [HttpGet("{seminarId}", Name = "Get")]
-        public IActionResult GetSeminar(int seminarId)
+        public IActionResult GetSeminar(long seminarId)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace Xmu.Crms.ViceVersa
 
         // PUT: /seminar/{seminarId}
         [HttpPut("{seminarId}")]
-        public IActionResult PutSeminar(int seminarId, [FromBody]dynamic json)
+        public IActionResult PutSeminar(long seminarId, [FromBody]dynamic json)
         {
             // Authentication
             // 学生无法修改讨论课，返回403
@@ -102,7 +102,7 @@ namespace Xmu.Crms.ViceVersa
 
         // DELETE: /seminar/{seminarId}
         [HttpDelete("{seminarId}")]
-        public IActionResult DeleteSeminar(int seminarId)
+        public IActionResult DeleteSeminar(long seminarId)
         {
             // Authentication
             // 学生无法删除讨论课，返回403
@@ -147,7 +147,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /seminar/{seminarId}/topic
         [HttpGet("{seminarId}/topic")]
-        public IActionResult GetSeminarTopics(int seminarId)
+        public IActionResult GetSeminarTopics(long seminarId)
         {
             try
             {
@@ -178,7 +178,7 @@ namespace Xmu.Crms.ViceVersa
 
         // POST: /seminar/{seminarId}/topic
         [HttpPost("{seminarId}/topic")]
-        public IActionResult PostNewTopicUnderSeminar(int seminarId, [FromBody]dynamic json)
+        public IActionResult PostNewTopicUnderSeminar(long seminarId, [FromBody]dynamic json)
         {
             // Authentication
             // 学生无法创建话题，返回403
@@ -216,7 +216,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /seminar/{seminarId}/group?classId={classId}
         [HttpGet("{seminarId}/group")]
-        public IActionResult GetSeminarGroups(int seminarId, [FromQuery]bool gradeable, [FromQuery]int classId)
+        public IActionResult GetSeminarGroups(long seminarId, [FromQuery]bool gradeable, [FromQuery]int classId)
         {
             try
             {
@@ -273,7 +273,7 @@ namespace Xmu.Crms.ViceVersa
 
         // GET: /seminar/{seminarId}/group/my
         [HttpGet("{seminarId}/group/my")]
-        public IActionResult GetMySeminarGroup(int seminarId)
+        public IActionResult GetMySeminarGroup(long seminarId)
         {
             // Authentication
             // 老师无法使用此API，返回403

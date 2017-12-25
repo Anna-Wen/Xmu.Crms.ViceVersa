@@ -113,7 +113,7 @@ namespace Xmu.Crms.ViceVersa
 
         // PUT: /group/{groupId}/remove
         [HttpPut("{groupId}/remove")]
-        public IActionResult RemoveGroupMember(int groupId, [FromBody]dynamic json)
+        public IActionResult RemoveGroupMember(long groupId, [FromBody]dynamic json)
         {
             try//注意看service有没有判断存不存在该学生
             {

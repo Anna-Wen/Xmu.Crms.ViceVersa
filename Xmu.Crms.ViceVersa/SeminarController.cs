@@ -18,11 +18,13 @@ namespace Xmu.Crms.ViceVersa
     {
         private readonly ISeminarService _iSeminarService;
         private readonly ITopicService _iTopicService;
+        private readonly ISeminarGroupService _iSeminarGroupService;
 
-        public SeminarController(ISeminarService iSeminarService, ITopicService iTopicService)
+        public SeminarController(ISeminarService iSeminarService, ITopicService iTopicService, ISeminarGroupService iSeminarGroupService)
         {
             _iSeminarService = iSeminarService;
             _iTopicService = iTopicService;
+            _iSeminarGroupService = iSeminarGroupService;
         }
 
         // GET: /seminar/{seminarId}
@@ -128,10 +130,10 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // GET: /seminar/{seminarId}/detail
-        [HttpGet("{seminarId}/detail")]
-        public IActionResult GetSeminarDetails(int seminarId)
-        {
+        //// GET: /seminar/{seminarId}/detail
+        //[HttpGet("{seminarId}/detail")]
+        //public IActionResult GetSeminarDetails(int seminarId)
+        //{
             //// Fetch data from database
             //SeminarDetail seminarDetail = new SeminarDetail { Id = 1, Name = "概要设计", StartTime = "10/10/2017", EndTime = "24/10/2017", Site = "海韵教学楼201", TeacherName = "邱明", TeacherEmail = "mingqiu@xmu.edu.cn" };
 
@@ -141,61 +143,107 @@ namespace Xmu.Crms.ViceVersa
 
             //// Success
             //return Json(seminarDetail);
-            throw new NotImplementedException();
-
-        }
+        //}
 
         // GET: /seminar/{seminarId}/topic
         [HttpGet("{seminarId}/topic")]
         public IActionResult GetSeminarTopics(int seminarId)
         {
-            //// Fetch data from database
-            //List<Topic> topics = new List<Topic>
-            //{
-            //    new Topic { Id = 257, Serial = "A", Name = "领域模型与模块", Description = "Domain model 与模块划分", GroupLimit = 5, GroupMemberLimit = 6, GroupLeft = 2 },
-            //    new Topic { Id = 258, Serial = "B", Name = "数据库设计", Description = "XXXXXXXX", GroupLimit = 5, GroupMemberLimit = 5, GroupLeft = 1 }
-            //};
+            try
+            {
+                // Fetch data from database
+                // 获得Seminar下的所有Topic信息
+                IList<Topic> topicList = _iTopicService.ListTopicBySeminarId(seminarId);
 
+                // 生成List<TopicVO>对象
+                // 如何计算剩余组数？？？
+                List<TopicVO> topics = new List<TopicVO>();
+                foreach (Topic i in topicList)
+                    topics.Add(i);
 
-            //// If seminar not found
-            //if (topics == null)
-            //    return NotFound();
-
-            //// Success
-            //return Json(topics);
-            throw new NotImplementedException();
+                // Success
+                return Json(topics);
+            }
+            //If seminar not found, 返回404
+            catch (SeminarNotFoundException)
+            {
+                return NotFound();
+            }
+            //seminarId 格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
         // POST: /seminar/{seminarId}/topic
         [HttpPost("{seminarId}/topic")]
         public IActionResult PostNewTopicUnderSeminar(int seminarId, [FromBody]dynamic json)
         {
-            ////Authentication
-            ////When user's permission denied
-            ////if(false)
-            ////  return Forbid();
+            // Authentication
+            // 学生无法创建话题，返回403
+            if (User.Type() == Shared.Models.Type.Student)
+                return Forbid();
 
-            ////Get information from json
-            //Topic newTopic = new Topic();
-            //if (json.GroupLimit != "" && json.GroupMemberLimit != "")
-            //{
-            //    newTopic = new Topic { Serial = json.Serial, Name = json.Name, Description = json.Description, GroupLimit = json.GroupLimit, GroupMemberLimit = json.GroupMemberLimit };
-            //}
+            try
+            {
+                //Get information from json
+                Topic newTopic = new Topic();
+                if (json.GroupLimit != "" && json.GroupMemberLimit != "")
+                {
+                    newTopic = new Topic { Serial = json.Serial, Name = json.Name, Description = json.Description, GroupNumberLimit = json.GroupLimit, GroupStudentLimit = json.GroupMemberLimit };
+                }
 
-            //// Store topic information in server and generate a id for this new topic
-            //newTopic.Id = 257;
+                // Store topic information in server and generate a id for this new topic
+                // 怎么完成无法在他人讨论课创建话题的权限判断？？？
+                long newTopicId = _iTopicService.InsertTopicBySeminarId(seminarId, newTopic);
 
-            //// Return topic id
-            //string uri = "/topic/" + newTopic.Id;
-            //return Created(uri, newTopic);
-            throw new NotImplementedException();
+                // Return topic id
+                string uri = "/topic/" + newTopicId;
+                return Created(uri, newTopic);
+            }
+            //If seminar not found, 返回404
+            catch (SeminarNotFoundException)
+            {
+                return NotFound();
+            }
+            //seminarId 格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
         // GET: /seminar/{seminarId}/group?classId={classId}
         [HttpGet("{seminarId}/group")]
         public IActionResult GetSeminarGroups(int seminarId, [FromQuery]bool gradeable, [FromQuery]int classId)
         {
-            //// Fetch data from database
+            try
+            {
+                // 先只实现了不分班级小组和不分用户是否可打分小组的方法
+
+                // Fetch data from database
+                IList<SeminarGroup> seminarGroupList = _iSeminarGroupService.ListSeminarGroupBySeminarId(seminarId);
+
+                // 转换成VO对象
+                List<GroupVO> groups = new List<GroupVO>();
+                foreach (SeminarGroup sg in seminarGroupList)
+                    groups.Add(sg);
+
+                // Success
+                return Json(groups);
+            }
+            //If seminar not found, 返回404
+            catch (SeminarNotFoundException)
+            {
+                return NotFound();
+            }
+            //seminarId 格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            // Fetch data from database
             //Student l1 = new Student { Id = 233, Name = "张三", Number = "24320152202333" };
             //Student s1 = new Student { Id = 248, Name = "李四", Number = "24320152202345" };
             //Student s2 = new Student { Id = 256, Name = "王五", Number = "24320152202356" };
@@ -207,12 +255,12 @@ namespace Xmu.Crms.ViceVersa
             //List<Topic> t2 = new List<Topic> { new Topic { Id = 258, Serial = "B", Name = "数据库设计", Description = "XXXXXXXX", GroupLimit = 5, GroupMemberLimit = 5, GroupLeft = 1 } };
             //List<Topic> t3 = new List<Topic> { new Topic { Id = 257, Serial = "A", Name = "领域模型与模块", Description = "Domain model 与模块划分", GroupLimit = 5, GroupMemberLimit = 6, GroupLeft = 2 },
             //                                        new Topic { Id = 258, Serial = "B", Name = "数据库设计", Description = "XXXXXXXX", GroupLimit = 5, GroupMemberLimit = 5, GroupLeft = 1 } };
-            //SeminarGrade sg1 = new SeminarGrade { PresentationGrade = new List<int> {5}, ReportGrade = 5, Grade = 5 };
-            //SeminarGrade sg2 = new SeminarGrade { PresentationGrade = new List<int> {4}, ReportGrade = 4, Grade = 4 };
-            //SeminarGrade sg3 = new SeminarGrade { PresentationGrade = new List<int> {5} };
-            //SeminarGrade sg4 = new SeminarGrade { PresentationGrade = new List<int> {4} };
-            //SeminarGrade sg5 = new SeminarGrade { PresentationGrade = new List<int> {5, 4} };
-            
+            //SeminarGrade sg1 = new SeminarGrade { PresentationGrade = new List<int> { 5 }, ReportGrade = 5, Grade = 5 };
+            //SeminarGrade sg2 = new SeminarGrade { PresentationGrade = new List<int> { 4 }, ReportGrade = 4, Grade = 4 };
+            //SeminarGrade sg3 = new SeminarGrade { PresentationGrade = new List<int> { 5 } };
+            //SeminarGrade sg4 = new SeminarGrade { PresentationGrade = new List<int> { 4 } };
+            //SeminarGrade sg5 = new SeminarGrade { PresentationGrade = new List<int> { 5, 4 } };
+
             //List<Group> groups = new List<Group> {
             //    new Group { Id = 28, Name = "1-A-1", Leader = l1, Members = memberList, Topics = t1, Report = "/report/233.pdf", Grade = sg1 },
             //    new Group { Id = 29, Name = "1-A-2", Leader = s1, Members = memberList, Topics = t1, Report = "/report/233.pdf", Grade = sg2 },
@@ -221,14 +269,6 @@ namespace Xmu.Crms.ViceVersa
             //    new Group { Id = 32, Name = "2-A-2", Leader = l3, Members = memberList, Topics = t1, Report = "", Grade = sg3 },
             //    new Group { Id = 33, Name = "3-A-1", Leader = l4, Members = memberList, Topics = t3, Report = "/report/233.pdf", Grade = sg5 }
             //};
-
-            //// If seminar not found
-            //if (groups == null)
-            //    return NotFound();
-
-            //// Success
-            //return Json(groups);
-            throw new NotImplementedException();
         }
 
         // GET: /seminar/{seminarId}/group/my

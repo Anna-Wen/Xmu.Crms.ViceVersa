@@ -344,7 +344,7 @@ namespace Xmu.Crms.ViceVersa
                 long newSeminarId = _iSeminarService.InsertSeminarByCourseId(courseId, newSeminar);
 
                 // Return seminar id
-                string uri = "/seminar/" + newSeminar.Id;
+                string uri = "/seminar/" + newSeminarId;
                 return Created(uri, newSeminar);
             }
             // 未找到课程，返回404

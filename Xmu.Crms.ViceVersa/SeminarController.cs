@@ -228,7 +228,33 @@ namespace Xmu.Crms.ViceVersa
                 // 转换成VO对象
                 List<GroupVO> groups = new List<GroupVO>();
                 foreach (SeminarGroup sg in seminarGroupList)
-                    groups.Add(sg);
+                {
+                    GroupVO g = sg;
+
+                    //获取Members
+                    IList<UserInfo> memberList = _iSeminarGroupService.ListSeminarGroupMemberByGroupId(sg.Id);
+                    List<UserVO> members = new List<UserVO>();
+                    foreach (UserInfo u in memberList)
+                        members.Add(u);
+                    g.Members = members;
+
+                    //获取Topics和PresentationGrade
+                    IList<SeminarGroupTopic> seminarGroupTopicList = _iTopicService.ListSeminarGroupTopicByGroupId(sg.Id);
+                    List<TopicVO> topics = new List<TopicVO>();
+                    List<int> pGrades = new List<int>();
+                    foreach (SeminarGroupTopic sgt in seminarGroupTopicList)
+                    {
+                        topics.Add(sgt.Topic);
+                        pGrades.Add((int)sgt.PresentationGrade);
+                    }
+                    g.Topics = topics;
+                    g.Grade.PresentationGrade = pGrades;
+
+                    //获取Name
+                    g.GetName();
+
+                    groups.Add(g);
+                }
 
                 // Success
                 return Json(groups);
@@ -243,58 +269,60 @@ namespace Xmu.Crms.ViceVersa
             {
                 return BadRequest();
             }
-            // Fetch data from database
-            //Student l1 = new Student { Id = 233, Name = "张三", Number = "24320152202333" };
-            //Student s1 = new Student { Id = 248, Name = "李四", Number = "24320152202345" };
-            //Student s2 = new Student { Id = 256, Name = "王五", Number = "24320152202356" };
-            //Student l2 = new Student { Id = 233, Name = "小红", Number = "24320152202456" };
-            //Student l3 = new Student { Id = 233, Name = "小紫", Number = "24320152202478" };
-            //Student l4 = new Student { Id = 233, Name = "小明", Number = "24320152202499" };
-            //List<Student> memberList = new List<Student> { s1, s2 };
-            //List<Topic> t1 = new List<Topic> { new Topic { Id = 257, Serial = "A", Name = "领域模型与模块", Description = "Domain model 与模块划分", GroupLimit = 5, GroupMemberLimit = 6, GroupLeft = 2 } };
-            //List<Topic> t2 = new List<Topic> { new Topic { Id = 258, Serial = "B", Name = "数据库设计", Description = "XXXXXXXX", GroupLimit = 5, GroupMemberLimit = 5, GroupLeft = 1 } };
-            //List<Topic> t3 = new List<Topic> { new Topic { Id = 257, Serial = "A", Name = "领域模型与模块", Description = "Domain model 与模块划分", GroupLimit = 5, GroupMemberLimit = 6, GroupLeft = 2 },
-            //                                        new Topic { Id = 258, Serial = "B", Name = "数据库设计", Description = "XXXXXXXX", GroupLimit = 5, GroupMemberLimit = 5, GroupLeft = 1 } };
-            //SeminarGrade sg1 = new SeminarGrade { PresentationGrade = new List<int> { 5 }, ReportGrade = 5, Grade = 5 };
-            //SeminarGrade sg2 = new SeminarGrade { PresentationGrade = new List<int> { 4 }, ReportGrade = 4, Grade = 4 };
-            //SeminarGrade sg3 = new SeminarGrade { PresentationGrade = new List<int> { 5 } };
-            //SeminarGrade sg4 = new SeminarGrade { PresentationGrade = new List<int> { 4 } };
-            //SeminarGrade sg5 = new SeminarGrade { PresentationGrade = new List<int> { 5, 4 } };
-
-            //List<Group> groups = new List<Group> {
-            //    new Group { Id = 28, Name = "1-A-1", Leader = l1, Members = memberList, Topics = t1, Report = "/report/233.pdf", Grade = sg1 },
-            //    new Group { Id = 29, Name = "1-A-2", Leader = s1, Members = memberList, Topics = t1, Report = "/report/233.pdf", Grade = sg2 },
-            //    new Group { Id = 30, Name = "1-B-1", Leader = s2, Members = memberList, Topics = t2, Report = "/report/233.pdf", Grade = sg3 },
-            //    new Group { Id = 31, Name = "2-A-1", Leader = l2, Members = memberList, Topics = t1, Report = "/report/233.pdf", Grade = sg4 },
-            //    new Group { Id = 32, Name = "2-A-2", Leader = l3, Members = memberList, Topics = t1, Report = "", Grade = sg3 },
-            //    new Group { Id = 33, Name = "3-A-1", Leader = l4, Members = memberList, Topics = t3, Report = "/report/233.pdf", Grade = sg5 }
-            //};
         }
 
         // GET: /seminar/{seminarId}/group/my
         [HttpGet("{seminarId}/group/my")]
         public IActionResult GetMySeminarGroup(int seminarId)
         {
-            ////Authentication
-            ////When user's permission denied
-            ////if(false)
-            ////  return Forbid();
+            // Authentication
+            // 老师无法使用此API，返回403
+            if (User.Type() == Shared.Models.Type.Teacher)
+                return Forbid();
 
-            //// Fetch data from database
-            //Student leader = new Student { Id = 233, Name = "张三", Number = "24320152202333" };
-            //Student s1 = new Student { Id = 248, Name = "李四", Number = "24320152202345" };
-            //Student s2 = new Student { Id = 256, Name = "王五", Number = "24320152202356" };
-            //List<Student> memberList = new List<Student> { s1, s2 };
-            //List<Topic> topics = new List<Topic> { new Topic { Id = 257, Serial = "A", Name = "领域模型与模块", Description = "Domain model 与模块划分", GroupLimit = 5, GroupMemberLimit = 6, GroupLeft = 2 } };
-            //Group myGroup = new Group { Id = 28, Name = "1-A-1", Leader = leader, Members = memberList, Topics = topics };
+            try
+            {
+                // Fetch data from database
+                SeminarGroup seminarGroup = _iSeminarGroupService.GetSeminarGroupById(seminarId, User.Id());
 
-            //// If seminar not found or no groups yet
-            //if (myGroup == null)
-            //    return NotFound();
+                // 转换成VO对象
+                GroupVO myGroup = seminarGroup;
 
-            //// Success
-            //return Json(myGroup);
-            throw new NotImplementedException();
+                //获取Members
+                IList<UserInfo> memberList = _iSeminarGroupService.ListSeminarGroupMemberByGroupId(seminarGroup.Id);
+                List<UserVO> members = new List<UserVO>();
+                foreach (UserInfo u in memberList)
+                    members.Add(u);
+                myGroup.Members = members;
+
+                //获取Topics和PresentationGrade
+                IList<SeminarGroupTopic> seminarGroupTopicList = _iTopicService.ListSeminarGroupTopicByGroupId(seminarGroup.Id);
+                List<TopicVO> topics = new List<TopicVO>();
+                List<int> pGrades = new List<int>();
+                foreach (SeminarGroupTopic sgt in seminarGroupTopicList)
+                {
+                    topics.Add(sgt.Topic);
+                    pGrades.Add((int)sgt.PresentationGrade);
+                }
+                myGroup.Topics = topics;
+                myGroup.Grade.PresentationGrade = pGrades;
+
+                //获取Name
+                myGroup.GetName();
+
+                // Success
+                return Json(myGroup);
+            }
+            //If group not found, 返回404
+            catch (GroupNotFoundException)
+            {
+                return NotFound();
+            }
+            //seminarId 格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using Xmu.Crms.Shared.Exceptions;
 using Xmu.Crms.Shared.Models;
@@ -27,7 +28,7 @@ namespace Xmu.Crms.ViceVersa
         }
 
         // GET: /me
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("me")]
         public IActionResult GetCurrentUser()
         {
@@ -49,7 +50,7 @@ namespace Xmu.Crms.ViceVersa
         }
 
         // PUT: /me
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("me")]
         public IActionResult Put(int id, [FromBody] dynamic json)
         {

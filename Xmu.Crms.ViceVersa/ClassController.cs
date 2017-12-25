@@ -18,6 +18,7 @@ namespace Xmu.Crms.ViceVersa
         private readonly IClassService _classService;
         private readonly ICourseService _courseService;
         private readonly IUserService _userService;
+        private readonly IFixGroupService _fixGroupService;
 
            public ClassController(IClassService classService,ICourseService courseService)
         {
@@ -48,6 +49,10 @@ namespace Xmu.Crms.ViceVersa
                     // Fetch selected class list from database
                     IList<ClassInfo> classList = _courseService.ListClassByName(courseName, courseTeacher);
 
+                    //去除已选班级
+                    IList<ClassInfo> classSelectedList = _classService.ListClassByUserId(User.Id());
+                    foreach (ClassInfo c in classSelectedList)
+                        classList.Remove(c);
 
                     List<CourseClassVO> classes = new List<CourseClassVO>();
                     foreach (ClassInfo c in classList)
@@ -164,28 +169,21 @@ namespace Xmu.Crms.ViceVersa
         [HttpPost("{classId}/student")]
         public IActionResult PostStudentUnderClass(int classId, [FromBody]dynamic json)
         {
+            //学生无法为他人选课（URL中ID与自身ID不同）
+            // if (studentId!=User.Id()) return Forbid();
+
             try
             {
-                //Authentication
-                //When user's permission denied
-                //if(false)
-                //  return Forbid();
-
-                // Get information from json
-                //Student newStudentInClass = new Student { Id = json.Id };
-
-                // Judge and store class-student information in server
-
-                // If already select another class under the same course
-
-                var userId = 8;
-                _classService.InsertCourseSelectionById(userId, classId);
-                return Json(1);
-                //  return Conflict(); 
+                var classSelectionId= _classService.InsertCourseSelectionById(4, classId);
+                
+                //已选过同课程的课
+                if (classSelectionId==0)
+                   return StatusCode(409);
 
                 // Return class id & student id
-                //string uri = "/class/" + classId + "/student/" + newStudentInClass.Id;
-                //return Created(uri, newStudentInClass);
+                string uri = "/class/" + classId + "/student/" + User.Id();
+                return Created(uri, classSelectionId);
+
             }
             catch (UserNotFoundException){ return NotFound(); }
             catch (ClassNotFoundException) { return NotFound(); }
@@ -196,87 +194,124 @@ namespace Xmu.Crms.ViceVersa
         [HttpDelete("{classId}/student/{studentId}")]
         public IActionResult DeleteStudentUnderClass(int classId, int studentId)
         {
+            //学生无法为他人退课（URL中ID与自身ID不同）
+           // if (studentId!=User.Id()) return Forbid();
+
             try
             {
-                //Authentication
-                //When user's permission denied
-                //if(false)
-                //  return Forbid();
-
                 _classService.DeleteCourseSelectionById(studentId, classId);
 
                 //Success
-                return Json(1);
+                return NoContent();
             }
             catch(UserNotFoundException) { return NotFound(); }
             catch (ClassNotFoundException) { return NotFound(); }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
-        //        // GET: /class/{classId}/classgroup
-        //        [HttpGet("{classId}/classgroup")]
-        //        public IActionResult GetClassGroup(int classId)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied
-        //            //if(false)
-        //            //  return Forbid();
+        // GET: /Class/{classId}/student?numBeginWith={studentNumber}&nameBeginWith={studentName}
+        [HttpGet("{classId}/student")]
+        public IActionResult GetStudentListUnderClass(int classId,[FromQuery]string studentNumber, [FromQuery]string studentName)
+        {
+            try
+            {
+                IList<UserInfo> studentList = _userService.ListUserByClassId(classId, studentNumber, studentName);
 
-        //            // Fetch class group from database
-        //            Student leader = new Student { Id = 233, Name = "张三", Number = "24320152202333" };
-        //            Student s1 = new Student { Id = 248, Name = "李四", Number = "24320152202345" };
-        //            Student s2 = new Student { Id = 256, Name = "王五", Number = "24320152202356" };
-        //            List<Student> memberList = new List<Student>
-        //            {
-        //                s1,
-        //                s2
-        //            };
+                List<UserVO> studentVO = new List<UserVO>();
+                foreach (UserInfo u in studentList)
+                    studentVO.Add(u);
 
-        //            ClassGroup classGroup = new ClassGroup { Leader = leader, Members = memberList};
+                return Json(studentVO);
+            }
+            catch (ClassNotFoundException) { return NotFound(); }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+        }
 
-        //            // Success
-        //            return Json(classGroup);
-        //        }
 
-        //        // PUT: /class/{classId}/classgroup/add
-        //        [HttpPut("{classId}/classgroup/add")]
-        //        public IActionResult AddMemberIntoClassGroup(int classId, [FromBody]dynamic json)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied (not in this group / not leader)
-        //            //if(false)
-        //            //  return Forbid();
+        // GET: /class/{classId}/classgroup
+        [HttpGet("{classId}/classgroup")]
+        public IActionResult GetClassGroup(int classId)
+        {
+            //Authentication
+            // 教师访问，返回403
+            if (User.Type() == Shared.Models.Type.Teacher)
+                return Forbid();
+            try
+            {
+                //找到学生所属小组
+                FixGroup fixGroup= _fixGroupService.GetFixedGroupById(User.Id(), classId);
+                //得到组员
+                IList<UserInfo> groupMember = _fixGroupService.ListFixGroupMemberByGroupId(fixGroup.Id);
 
-        //            // Get information from json
-        //            Student newStudentInClassGroup = new Student { Id = json.Id };
+                ClassGroupVO classGroupVO = new ClassGroupVO(fixGroup, groupMember);
+                // Success
+                return Json(classGroupVO);
+            }
+            catch (ClassNotFoundException) { return NotFound(); }
+            catch (UserNotFoundException) { return NotFound(); }
+            catch (FixGroupNotFoundException) { return NotFound(); }
+            //错误的ID格式，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+        }
 
-        //            // Add student in classgroup database
+        // PUT: /class/{classId}/classgroup/add
+        [HttpPut("{classId}/classgroup/add")]
+        public IActionResult AddMemberIntoClassGroup(int classId, [FromBody]dynamic json)
+        {
+            try
+            {
+                //Authentication 学生不是该小组成员
+                FixGroup fixGroup = _fixGroupService.GetFixedGroupById(User.Id(), classId);
+                if (fixGroup.Id != json.GroupId) 
+                   return Forbid();
+                
+                // Add student in classgroup database
+                var addId = _fixGroupService.InsertStudentIntoGroup(json.StudentId, fixGroup.Id);
+               
+                // Success
+                return NoContent();
+            }
+            catch (FixGroupNotFoundException) { return NotFound(); }
+            catch (UserNotFoundException) { return BadRequest(); }
+            catch (InvalidOperationException) { return StatusCode(409); }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+        }
 
-        //            // If already in group
-        //            //  return Conflict();
-
-        //            // Success
-        //            return NoContent(); 
-        //        }
-
-        //        // PUT: /class/{classId}/classgroup/remove
-        //        [HttpPut("{classId}/classgroup/remove")]
-        //        public IActionResult RemoveMemberIntoClassGroup(int classId, [FromBody]dynamic json)
-        //        {
-        //            //Authentication
-        //            //When user's permission denied (not in this group / not leader)
-        //            //if(false)
-        //            //  return Forbid();
-
-        //            // Get information from json
-        //            Student newStudentInClassGroup = new Student { Id = json.Id };
-
-        //            // Remove student from this classgroup database
-
-        //            // If student is not in this group
-        //            //  return Conflict();
-
-        //            // Success
-        //            return NoContent();         
-        //        }
+        // PUT: /class/{classId}/classgroup/remove
+        [HttpPut("{classId}/classgroup/remove")]
+        public IActionResult RemoveMemberIntoClassGroup(int classId, [FromBody]dynamic json)
+        {
+            try
+            {
+                //Authentication  权限不足（不是该小组的成员/组长）
+                FixGroup fixGroup = _fixGroupService.GetFixedGroupById(User.Id(), classId);
+                if (fixGroup.Id != json.GroupId||fixGroup.Leader.Id!=User.Id())
+                    return Forbid();
+                
+                // Remove student from this classgroup database
+                _fixGroupService.DeleteFixGroupUserById(fixGroup.Id, json.StudentId);
+               
+                // Success
+                return NoContent();
+            }
+            catch (FixGroupNotFoundException) { return NotFound(); }
+            catch (UserNotFoundException) { return StatusCode(409); }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+        }
     }
 }

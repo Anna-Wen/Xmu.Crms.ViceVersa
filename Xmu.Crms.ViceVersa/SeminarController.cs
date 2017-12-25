@@ -3,78 +3,129 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Xmu.Crms.Shared.Models;
+using Xmu.Crms.Shared.Exceptions;
+using Xmu.Crms.Shared.Service;
+using Xmu.Crms.Web.ViceVersa.VO;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
     [Route("/seminar")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SeminarController : Controller
     {
-        List<Seminar> seminars = new List<Seminar>();
-        List<Group> groups = new List<Group>();
+        private readonly ISeminarService _iSeminarService;
+        private readonly ITopicService _iTopicService;
+
+        public SeminarController(ISeminarService iSeminarService, ITopicService iTopicService)
+        {
+            _iSeminarService = iSeminarService;
+            _iTopicService = iTopicService;
+        }
 
         // GET: /seminar/{seminarId}
         [HttpGet("{seminarId}", Name = "Get")]
         public IActionResult GetSeminar(int seminarId)
         {
-            //// Fetch data from database
-            //List<Topic> topics = new List<Topic>
-            //{
-            //    new Topic { Id = 257, Serial = "A", Name = "领域模型与模块" }
-            //};
-            //Seminar seminar = new Seminar { Id = 32, Name = "概要设计", Description = "本节讨论课的主要内容针对第一二章", GroupingMethod = "fixed", StartTime = "10/10/2017", EndTime = "24/10/2017", Topics = topics };
+            try
+            {
+                // Fetch data from database
+                // 获得Seminar的基本信息
+                Seminar seminarData = _iSeminarService.GetSeminarBySeminarId(seminarId);
+                // 获得Seminar下的所有Topic信息
+                IList<Topic> topicList = _iTopicService.ListTopicBySeminarId(seminarId);
 
-            //// If seminar not found
-            //if (seminar == null)
-            //    return NotFound();
+                // 生成SeminarVO对象
+                SeminarVO seminar = seminarData;
+                // 如何计算剩余组数？？？
+                List<TopicVO> topics = new List<TopicVO>();
+                foreach (Topic i in topicList)
+                    topics.Add(i);
+                //将topics放入SeminarVO对象中
+                seminar.Topics = topics;
 
-            //// Success
-            //return Json(seminar);
-            throw new NotImplementedException();
+                // Success
+                return Json(seminar);
+            }
+            //If seminar not found, 返回404
+            catch (SeminarNotFoundException)
+            {
+                return NotFound();
+            }
+            //seminarId 格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
         // PUT: /seminar/{seminarId}
         [HttpPut("{seminarId}")]
         public IActionResult PutSeminar(int seminarId, [FromBody]dynamic json)
         {
-            ////Authentication
-            ////When user's permission denied
-            ////if(false)
-            ////return Forbid();
+            // Authentication
+            // 学生无法修改讨论课，返回403
+            if (User.Type() == Shared.Models.Type.Student)
+                return Forbid();
 
-            ////Get information from json
-            //GradeProportion proportions = null;
-            //if (json.Proportions != null && json.Proportions.Report != "" && json.Proportions.Presentation != "" && json.Proportions.C != "" && json.Proportions.B != "" && json.Proportions.A != "")
-            //{
-            //    proportions = new GradeProportion { Report = json.Proportions.Report, Presentation = json.Proportions.Presentation, C = json.Proportions.C, B = json.Proportions.B, A = json.Proportions.A };
-            //}
-            //Seminar editedSeminar = new Seminar { Name = json.Name, Description = json.Description, GroupingMethod = json.GroupingMethod, StartTime = json.StartTime, EndTime = json.EndTime, Proportions = proportions };
+            try
+            {
+                // Get information from json
+                Seminar editedSeminar = new Seminar { Id = seminarId, Name = json.Name, Description = json.Description, StartTime = Convert.ToDateTime(json.StartTime), EndTime = Convert.ToDateTime(json.EndTime) };
+                // 这里groupingMethod返回的是fixed还是固定分组？？？
+                if (json.GroupingMethod == "fixed" || json.GroupingMethod == "固定分组")
+                    editedSeminar.IsFixed = true;
+                else if (json.GroupingMethod == "random" || json.GroupingMethod == "随机分组")
+                    editedSeminar.IsFixed = false;
 
-            ////Change information in database
-            ////if not found
-            ////    return NotFound();
+                //Change information in database
+                _iSeminarService.UpdateSeminarBySeminarId(seminarId, editedSeminar);
 
-            ////Success
-            //return NoContent();
-            throw new NotImplementedException();
-
+                //Success
+                return NoContent();
+            }
+            //If seminar not found, 返回404
+            catch (SeminarNotFoundException)
+            {
+                return NotFound();
+            }
+            //seminarId 格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE: /seminar/{seminarId}
         [HttpDelete("{seminarId}")]
         public IActionResult DeleteSeminar(int seminarId)
         {
-            //Authentication
-            //When user's permission denied
-            //if(false)
-            //  return Forbid();
+            // Authentication
+            // 学生无法删除讨论课，返回403
+            if (User.Type() == Shared.Models.Type.Student)
+                return Forbid();
 
-            //Delete seminar from database
-            //if not found
-            //    return NotFound();
+            try
+            {
+                // Delete seminar from database
+                // 怎么完成无法删除他人讨论课的权限判断？？？
+                _iSeminarService.DeleteSeminarBySeminarId(seminarId);
 
-            //Success
-            return NoContent();
+                // Success
+                return NoContent();
+            }
+            //If seminar not found, 返回404
+            catch (SeminarNotFoundException)
+            {
+                return NotFound();
+            }
+            //seminarId 格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
         // GET: /seminar/{seminarId}/detail

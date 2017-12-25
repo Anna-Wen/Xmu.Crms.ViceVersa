@@ -4,6 +4,7 @@ using Xmu.Crms.Shared.Models;
 using Xmu.Crms.Shared.Service;
 using Xmu.Crms.Shared.Exceptions;
 using Xmu.Crms.Web.ViceVersa.VO;
+using System;
 
 namespace Xmu.Crms.ViceVersa
 {
@@ -39,7 +40,6 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
-
             try
             {
                 ClassInfo classinfo = _classService.GetClassByClassId(classId);
@@ -48,6 +48,11 @@ namespace Xmu.Crms.ViceVersa
                 return Json(classVO);
             }
             catch (ClassNotFoundException) { return NotFound(); }
+            //classId格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
 
         }
 
@@ -55,39 +60,68 @@ namespace Xmu.Crms.ViceVersa
         [HttpPut("{classId}")]
         public IActionResult PutClass(int classId, [FromBody]dynamic json)
         {
-            //Authentication
-            //When user's permission denied
-            //if(false)
-            //  return Forbid();
+            // Authentication
+            // 学生无法修改班级，返回403
+            if (User.Type() == Shared.Models.Type.Student)
+                return Forbid();
 
-            //Get information from json
-           
-            //Change information in database
-            //if not found
-            //    return NotFound();
+            try
+            {
+                //找到班级
+                ClassInfo classInfo = _classService.GetClassByClassId(classId);
+                //无法修改他人班级
+                if (classInfo.Course.Teacher.Id != User.Id()) return Forbid();
 
-            //Success
-            return NoContent();
+                //Change information in database
+                classInfo.ClassTime = json.Time;
+                classInfo.Site = json.Site;
+                classInfo.Name = json.Name;
+                classInfo.ReportPercentage = json.Proportions.Report;
+                classInfo.PresentationPercentage = json.Proportions.Presentation;
+                classInfo.ThreePointPercentage = json.Proportions.C;
+                classInfo.FourPointPercentage = json.Proportions.B;
+                classInfo.FivePointPercentage = json.Proportions.A;
+
+                _classService.UpdateClassByClassId(classId,classInfo);
+               
+                //Success
+                return NoContent();
+            }
+            catch (ClassNotFoundException) { return NotFound(); }
+            //classId格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
         // DELETE: /class/{classId}
         [HttpDelete("{classId}")]
         public IActionResult DeleteClass(long classId)
         {
+            // Authentication
+            // 学生无法删除班级，返回403
+            if (User.Type() == Shared.Models.Type.Student)
+                return Forbid();
+
             try
             {
-                //Authentication
-                //When user's permission denied
-                //if(false)
-                //  return Forbid();
+                //无法删除他人班级
+                ClassInfo classInfo = _classService.GetClassByClassId(classId);
+               if(classInfo.Course.Teacher.Id!=User.Id()) return Forbid();
 
                 _classService.DeleteClassByClassId(classId);
-
-
+                
                 //Success
                 return NoContent();
             }
+            //If not found, 返回404
             catch (ClassNotFoundException) { return NotFound(); }
+            //classId格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
         }
 
 

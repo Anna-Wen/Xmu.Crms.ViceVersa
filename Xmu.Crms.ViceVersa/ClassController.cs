@@ -12,9 +12,9 @@ namespace Xmu.Crms.ViceVersa
     public class ClassController : Controller
     {
         private readonly IClassService _classService;
-     
+        private readonly ICourseService _courseService;
 
-        public ClassController(IClassService classService)
+           public ClassController(IClassService classService)
         {
             _classService = classService;
         }
@@ -26,7 +26,7 @@ namespace Xmu.Crms.ViceVersa
             try
             {
                 // Fetch selected class list from database
-                IList<ClassInfo> classList = _classService.ListClassByName(courseName, courseTeacher);
+                IList<ClassInfo> classList = _courseService.ListClassByName(courseName, courseTeacher);
                 
                 // Success
                 return Json(classList);
@@ -39,6 +39,7 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet("{classId}")]
         public IActionResult GetClass(int classId)
         {
+
             try
             {
                 ClassInfo classinfo = _classService.GetClassByClassId(classId);

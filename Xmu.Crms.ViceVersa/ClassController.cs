@@ -14,9 +14,10 @@ namespace Xmu.Crms.ViceVersa
         private readonly IClassService _classService;
         private readonly ICourseService _courseService;
 
-           public ClassController(IClassService classService)
+           public ClassController(IClassService classService,ICourseService courseService)
         {
             _classService = classService;
+            _courseService = courseService;
         }
 
         // GET: /class?courseName={courseName}&courseTeacher={courseTeacher}

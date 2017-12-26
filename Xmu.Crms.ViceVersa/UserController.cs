@@ -117,7 +117,7 @@ namespace Xmu.Crms.ViceVersa
                 UserInfo curUser = new UserInfo
                 {
                     Phone = json.Phone,
-                    Password = json.Passsword
+                    Password = json.Password
                 };
 
                 // 调用LoginService的SignInPhone方法
@@ -140,7 +140,6 @@ namespace Xmu.Crms.ViceVersa
         }
 
         // 用来生成正确登陆后的结果
-        // 要在signin界面和signup界面中存起来！！！
         private SignInResult GenerateJwtAndSignInResult(UserInfo user)
         {
             SignInResult signInResult = new SignInResult
@@ -172,7 +171,7 @@ namespace Xmu.Crms.ViceVersa
                 UserInfo curUser = new UserInfo
                 {
                     Phone = json.Phone,
-                    Password = json.Passsword
+                    Password = json.Password
                 };
 
                 // 调用LoginService的SignUpPhone方法

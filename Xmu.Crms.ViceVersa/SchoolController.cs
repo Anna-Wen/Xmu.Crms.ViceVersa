@@ -32,9 +32,6 @@ namespace Xmu.Crms.ViceVersa
                 {
                     schools.Add(school);
                 }
-                // If school not found
-                if (schoolList == null)
-                    return NotFound();
 
                 // Success
                 return Json(schools);
@@ -42,7 +39,7 @@ namespace Xmu.Crms.ViceVersa
             //错误的ID格式，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
         
@@ -73,7 +70,7 @@ namespace Xmu.Crms.ViceVersa
             }
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
     }

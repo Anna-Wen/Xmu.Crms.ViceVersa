@@ -12,7 +12,7 @@ namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
     [Route("/course")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CourseController : Controller
     {
         private readonly ICourseService _iCourseService;
@@ -293,8 +293,8 @@ namespace Xmu.Crms.ViceVersa
         {
             // Authentication
             // 若教师设置embedGrade为true，返回400
-            if (User.Type() == Shared.Models.Type.Teacher && embedGrade == true)
-                return BadRequest();
+            //if (User.Type() == Shared.Models.Type.Teacher && embedGrade == true)
+            //    return BadRequest();
 
             try
             {

@@ -75,8 +75,8 @@ namespace Xmu.Crms.ViceVersa
                     // Success
                     return Json(classes);
                 }
-                catch (CourseNotFoundException) { return NotFound(); }
-                catch (UserNotFoundException) { return NotFound(); }
+                catch (CourseNotFoundException) { return NotFound(new {msg = "不存在符合的课程！"}); }
+                catch (UserNotFoundException) { return NotFound(new {msg = "用户不存在！"}); }
             }
         }
 
@@ -91,7 +91,7 @@ namespace Xmu.Crms.ViceVersa
                 // Success
                 return Json(classVO);
             }
-            catch (ClassNotFoundException) { return NotFound(); }
+            catch (ClassNotFoundException) { return NotFound(new {msg = "未找到该班级！"}); }
             //classId格式错误，返回400
             catch (ArgumentException)
             {
@@ -131,7 +131,7 @@ namespace Xmu.Crms.ViceVersa
                 //Success
                 return NoContent();
             }
-            catch (ClassNotFoundException) { return NotFound(); }
+            catch (ClassNotFoundException) { return NotFound(new {msg = "未找到该班级！"}); }
             //classId格式错误，返回400
             catch (ArgumentException)
             {
@@ -160,7 +160,7 @@ namespace Xmu.Crms.ViceVersa
                 return NoContent();
             }
             //If not found, 返回404
-            catch (ClassNotFoundException) { return NotFound(); }
+            catch (ClassNotFoundException) { return NotFound(new {msg = "未找到该班级！"}); }
             //classId格式错误，返回400
             catch (ArgumentException)
             {
@@ -175,11 +175,11 @@ namespace Xmu.Crms.ViceVersa
         public IActionResult PostStudentUnderClass(long classId, [FromBody]dynamic json)
         {
             //学生无法为他人选课（URL中ID与自身ID不同）
-            // if (studentId!=User.Id()) return Forbid();
+            if (studentId!=User.Id()) return Forbid();
 
             try
             {
-                var classSelectionId= _classService.InsertCourseSelectionById(4, classId);
+                var classSelectionId= _classService.InsertCourseSelectionById(User.Id(), classId);
                 
                 //已选过同课程的课
                 if (classSelectionId==0)
@@ -231,7 +231,7 @@ namespace Xmu.Crms.ViceVersa
 
                 return Json(studentVO);
             }
-            catch (ClassNotFoundException) { return NotFound(); }
+            catch (ClassNotFoundException) { return NotFound(new {msg = "未找到该班级！"}); }
             catch (ArgumentException)
             {
                 return BadRequest();

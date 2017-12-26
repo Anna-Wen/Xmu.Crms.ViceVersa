@@ -54,9 +54,11 @@ namespace Xmu.Crms.ViceVersa
             {
                 // Get information from json
                 School newSchool = new School { Name = json.Name, Province = json.Province, City = json.City };
+                Console.WriteLine(newSchool.City);//==============
 
-                //Get all the schools in the same city
-                IList<School> schoolList = _iSchoolService.ListSchoolByCity(json.City);
+                    //Get all the schools in the same city
+                    IList<School> schoolList = _iSchoolService.ListSchoolByCity(json.City);
+               
                 foreach(var school in schoolList)
                 {
                     // If already has a school with the same name

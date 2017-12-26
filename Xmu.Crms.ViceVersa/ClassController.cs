@@ -12,7 +12,7 @@ namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
     [Route("/class")]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ClassController : Controller
     {
         private readonly IClassService _classService;
@@ -35,8 +35,8 @@ namespace Xmu.Crms.ViceVersa
             //列出学生已选课程（班级）
             if (courseName == null && courseTeacher == null)
             {
-                //IList<ClassInfo> classList = _classService.ListClassByUserId(User.Id());
-                IList<ClassInfo> classList = _classService.ListClassByUserId(5);//测试数据
+                IList<ClassInfo> classList = _classService.ListClassByUserId(User.Id());
+
 
                 List<CourseClassVO> classes = new List<CourseClassVO>();
                 foreach (ClassInfo c in classList)
@@ -175,7 +175,14 @@ namespace Xmu.Crms.ViceVersa
         public IActionResult PostStudentUnderClass(long classId, [FromBody]dynamic json)
         {
             //学生无法为他人选课（URL中ID与自身ID不同）
+<<<<<<< HEAD
             //if (studentId!=User.Id()) return Forbid();
+=======
+
+            if (json.Id!=User.Id()) return Forbid();
+
+
+>>>>>>> master
             try
             {
                 var classSelectionId= _classService.InsertCourseSelectionById(User.Id(), classId);

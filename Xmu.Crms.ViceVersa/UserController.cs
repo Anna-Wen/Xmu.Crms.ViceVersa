@@ -45,7 +45,7 @@ namespace Xmu.Crms.ViceVersa
             // 如果用户不存在，返回404
             catch (UserNotFoundException)
             {
-                return NotFound(new {msg = "该用户不存在"});
+                return NotFound(new {msg = "该用户不存在！"});
             }
         }
 
@@ -85,7 +85,7 @@ namespace Xmu.Crms.ViceVersa
                         user.Education = null;
                 }
                 else
-                    return BadRequest(new {msg = "用户访问错误：未注册"});        //Type不为学生/老师，说明访问错误
+                    return BadRequest(new {msg = "用户访问错误：未注册用户！"});        //Type不为学生/老师，说明访问错误
                 
                 //记录性别
                 if (json.Gender == "male")
@@ -103,7 +103,7 @@ namespace Xmu.Crms.ViceVersa
             // 如果用户不存在，返回404
             catch (UserNotFoundException)
             {
-                return NotFound(new {msg = "该用户不存在"});
+                return NotFound(new {msg = "该用户不存在！"});
             }
         }
 
@@ -129,12 +129,12 @@ namespace Xmu.Crms.ViceVersa
             // 如果用户不存在，返回404
             catch (UserNotFoundException)
             {
-                return NotFound(new {msg = "该用户不存在"});
+                return NotFound(new {msg = "该用户不存在！"});
             }
             // 如果手机号/密码错误，返回401
             catch (PasswordErrorException)
             {
-                return Unauthorized(new {msg = "手机号/密码输入错误"});
+                return Unauthorized(new {msg = "手机号/密码输入错误！"});
             }
         }
 
@@ -183,7 +183,7 @@ namespace Xmu.Crms.ViceVersa
             // 如果注册用的手机号在数据库中存在，返回409
             catch (PhoneAlreadyExistsException)
             {
-                return StatusCode(409, new {msg = "该手机号已注册"});
+                return StatusCode(409, new {msg = "该手机号已注册！"});
             }
         }
 

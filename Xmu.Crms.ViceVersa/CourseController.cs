@@ -251,7 +251,7 @@ namespace Xmu.Crms.ViceVersa
             try
             {
                 //Get information from json
-                GradeProportionVO proportions = null;
+                GradeProportionVO proportions = new GradeProportionVO();
                 if (json.Proportions != null && json.Proportions.Report != "" && json.Proportions.Presentation != "" && json.Proportions.C != "" && json.Proportions.B != "" && json.Proportions.A != "")
                 {
                     proportions = new GradeProportionVO { Report = json.Proportions.Report, Presentation = json.Proportions.Presentation, C = json.Proportions.C, B = json.Proportions.B, A = json.Proportions.A };
@@ -275,6 +275,10 @@ namespace Xmu.Crms.ViceVersa
             catch (ArgumentException)
             {
                 return BadRequest(new { msg = "错误的ID格式！" });
+            }
+            catch(InvalidOperationException)
+            {
+                return StatusCode(409);
             }
         }
 

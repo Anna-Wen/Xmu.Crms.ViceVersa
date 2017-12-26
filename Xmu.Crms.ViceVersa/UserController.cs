@@ -9,6 +9,7 @@ using Xmu.Crms.Shared.Service;
 using System.Linq;
 using Xmu.Crms.Web.ViceVersa.VO;
 using System;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Xmu.Crms.ViceVersa
 {
@@ -134,7 +135,7 @@ namespace Xmu.Crms.ViceVersa
             // 如果手机号/密码错误，返回401
             catch (PasswordErrorException)
             {
-                return Unauthorized(new {msg = "手机号/密码输入错误！"});
+                return StatusCode(401, new { msg = "手机号/密码输入错误！" });
             }
         }
 

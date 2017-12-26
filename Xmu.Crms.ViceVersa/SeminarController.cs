@@ -13,7 +13,7 @@ namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
     [Route("/seminar")]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SeminarController : Controller
     {
         private readonly ISeminarService _iSeminarService;
@@ -284,7 +284,6 @@ namespace Xmu.Crms.ViceVersa
             {
                 // Fetch data from database
                 SeminarGroup seminarGroup = _iSeminarGroupService.GetSeminarGroupById(seminarId, User.Id());
-                //SeminarGroup seminarGroup = _iSeminarGroupService.GetSeminarGroupById(seminarId, 5);
 
                 // 转换成VO对象
                 GroupVO myGroup = seminarGroup;

@@ -12,7 +12,7 @@ namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
     [Route("/course")]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CourseController : Controller
     {
         private readonly ICourseService _iCourseService;

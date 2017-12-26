@@ -104,7 +104,11 @@ namespace Xmu.Crms.ViceVersa
             // 如果用户不存在，返回404
             catch (UserNotFoundException)
             {
-                return NotFound(new {msg = "该用户不存在！"});
+                return NotFound(Json(new {msg = "该用户不存在！"}));
+            }
+            catch (Exception)
+            {
+                return NotFound(Json(new ErrorMessage{ Msg = "该学校不存在！" }));
             }
         }
 

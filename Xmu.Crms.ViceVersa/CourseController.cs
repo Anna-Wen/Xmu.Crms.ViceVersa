@@ -67,6 +67,9 @@ namespace Xmu.Crms.ViceVersa
             catch (UserNotFoundException)
             {
                 return NotFound(new {msg = "该用户不存在！"});
+            }catch(ArgumentException)
+            {
+                return BadRequest();
             }
             //catch
             //{

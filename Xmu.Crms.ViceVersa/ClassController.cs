@@ -30,6 +30,7 @@ namespace Xmu.Crms.ViceVersa
         [HttpGet]
         public IActionResult GetClassListFromQuery([FromQuery]string courseName, [FromQuery]string courseTeacher)
         {
+            //列出学生已选课程（班级）
             if (courseName == null && courseTeacher == null)
             {
                 //IList<ClassInfo> classList = _classService.ListClassByUserId(User.Id());
@@ -42,6 +43,8 @@ namespace Xmu.Crms.ViceVersa
                 // Success
                 return Json(classes);
             }
+
+            //学生选课时查询
             else
             {
                 try

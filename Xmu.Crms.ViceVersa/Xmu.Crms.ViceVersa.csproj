@@ -18,8 +18,6 @@
 
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.1" />
-    <ProjectReference Include="..\Xmu.Crms.Services.HighGrade\Xmu.Crms.Services.HighGrade.csproj" />
-    <ProjectReference Include="..\Xmu.Crms.Services.Insomnia\Xmu.Crms.Services.Insomnia.csproj" />
     <ProjectReference Include="..\Xmu.Crms.Services.ViceVersa\Xmu.Crms.Services.ViceVersa.csproj" />
     <ProjectReference Include="..\Xmu.Crms.Shared\Xmu.Crms.Shared.csproj" />
     <ProjectReference Include="..\Xmu.Crms.Web.ViceVersa\Xmu.Crms.Web.ViceVersa.csproj" />

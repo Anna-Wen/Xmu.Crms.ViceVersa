@@ -102,14 +102,14 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法修改班级，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return Forbid("1");
 
             try
             {
                 //找到班级
                 ClassInfo classInfo = _classService.GetClassByClassId(classId);
                 //无法修改他人班级
-                if (classInfo.Course.Teacher.Id != User.Id()) return Forbid();
+                if (classInfo.Course.Teacher.Id != User.Id()) return Forbid("2");
 
                 //Change information in database
                 classInfo.ClassTime = json.Time;
@@ -141,13 +141,13 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法删除班级，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return Forbid("1");
 
             try
             {
                 //无法删除他人班级
                 ClassInfo classInfo = _classService.GetClassByClassId(classId);
-               if(classInfo.Course.Teacher.Id!=User.Id()) return Forbid();
+               if(classInfo.Course.Teacher.Id!=User.Id()) return Forbid("2");
 
                 _classService.DeleteClassByClassId(classId);
                 
@@ -185,8 +185,8 @@ namespace Xmu.Crms.ViceVersa
                 return Created(uri, classSelectionId);
 
             }
-            catch (UserNotFoundException){ return NotFound(); }
-            catch (ClassNotFoundException) { return NotFound(); }
+            catch (UserNotFoundException){ return NotFound("1"); }
+            catch (ClassNotFoundException) { return NotFound("2"); }
         }
 
 
@@ -204,8 +204,8 @@ namespace Xmu.Crms.ViceVersa
                 //Success
                 return NoContent();
             }
-            catch(UserNotFoundException) { return NotFound(); }
-            catch (ClassNotFoundException) { return NotFound(); }
+            catch(UserNotFoundException) { return NotFound("1"); }
+            catch (ClassNotFoundException) { return NotFound("2"); }
             catch (ArgumentException)
             {
                 return BadRequest();
@@ -280,8 +280,8 @@ namespace Xmu.Crms.ViceVersa
                 // Success
                 return NoContent();
             }
-            catch (FixGroupNotFoundException) { return NotFound(); }
-            catch (UserNotFoundException) { return BadRequest(); }
+            catch (FixGroupNotFoundException) { return NotFound("1"); }
+            catch (UserNotFoundException) { return NotFound("2"); }
             catch (InvalidOperationException) { return StatusCode(409); }
             catch (ArgumentException)
             {
@@ -306,8 +306,8 @@ namespace Xmu.Crms.ViceVersa
                 // Success
                 return NoContent();
             }
-            catch (FixGroupNotFoundException) { return NotFound(); }
-            catch (UserNotFoundException) { return StatusCode(409); }
+            catch (FixGroupNotFoundException) { return NotFound("1"); }
+            catch (UserNotFoundException) { return NotFound("2"); }
             catch (ArgumentException)
             {
                 return BadRequest();

@@ -276,9 +276,9 @@ namespace Xmu.Crms.ViceVersa
             {
                 return BadRequest(new { msg = "错误的ID格式！" });
             }
-            catch(InvalidCastException)
+            catch(InvalidOperationException)
             {
-                return null;
+                return StatusCode(409);
             }
         }
 

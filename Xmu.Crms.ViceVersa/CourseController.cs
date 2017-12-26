@@ -264,7 +264,7 @@ namespace Xmu.Crms.ViceVersa
 
                 // Return class id
                 string uri = "/class/" + newClassId;
-                return Created(uri, newClass);
+                return Created(uri, new { id = newClassId });
             }
             // 未找到课程，返回404
             catch (CourseNotFoundException)

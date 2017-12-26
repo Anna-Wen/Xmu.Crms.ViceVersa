@@ -293,11 +293,15 @@ namespace Xmu.Crms.ViceVersa
             {
                 //Authentication 学生不是该小组成员
                 FixGroup fixGroup = _fixGroupService.GetFixedGroupById(User.Id(), classId);
-                if (fixGroup.Id != json.GroupId) 
-                   return Forbid();
-                
+                if (fixGroup.LeaderId != User.Id())
+                    return Forbid();
+
+                long studentId = json.StudentId;
+                FixGroup studentGroup = _fixGroupService.GetFixedGroupById(studentId, classId);
+                if(studentGroup!=null) return Forbid();
+
                 // Add student in classgroup database
-                var addId = _fixGroupService.InsertStudentIntoGroup(json.StudentId, fixGroup.Id);
+                var addId = _fixGroupService.InsertStudentIntoGroup(studentId, fixGroup.Id);
                
                 // Success
                 return NoContent();
@@ -319,11 +323,12 @@ namespace Xmu.Crms.ViceVersa
             {
                 //Authentication  权限不足（不是该小组的成员/组长）
                 FixGroup fixGroup = _fixGroupService.GetFixedGroupById(User.Id(), classId);
-                if (fixGroup.Id != json.GroupId||fixGroup.Leader.Id!=User.Id())
+                if (fixGroup.LeaderId!=User.Id())
                     return Forbid();
-                
+
+                long studentId = json.StudentId;
                 // Remove student from this classgroup database
-                _fixGroupService.DeleteFixGroupUserById(fixGroup.Id, json.StudentId);
+                _fixGroupService.DeleteFixGroupUserById(fixGroup.Id, studentId);
                
                 // Success
                 return NoContent();

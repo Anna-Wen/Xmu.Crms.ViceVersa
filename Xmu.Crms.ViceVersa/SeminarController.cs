@@ -33,6 +33,7 @@ namespace Xmu.Crms.ViceVersa
         {
             try
             {
+                long id = seminarId;
                 // Fetch data from database
                 // 获得Seminar的基本信息
                 Seminar seminarData = _iSeminarService.GetSeminarBySeminarId(seminarId);
@@ -74,8 +75,10 @@ namespace Xmu.Crms.ViceVersa
 
             try
             {
+                string startTime = json.StartTime;
+                string endTime = json.EndTime;
                 // Get information from json
-                Seminar editedSeminar = new Seminar { Id = seminarId, Name = json.Name, Description = json.Description, StartTime = Convert.ToDateTime(json.StartTime), EndTime = Convert.ToDateTime(json.EndTime) };
+                Seminar editedSeminar = new Seminar { Id = seminarId, Name = json.Name, Description = json.Description, StartTime = Convert.ToDateTime(startTime), EndTime = Convert.ToDateTime(endTime) };
                 // 这里groupingMethod返回的是fixed还是固定分组？？？
                 if (json.GroupingMethod == "fixed" || json.GroupingMethod == "固定分组")
                     editedSeminar.IsFixed = true;

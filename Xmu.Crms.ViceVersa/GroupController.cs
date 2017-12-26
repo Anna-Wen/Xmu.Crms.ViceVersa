@@ -5,11 +5,14 @@ using Xmu.Crms.Shared.Service;
 using System;
 using Xmu.Crms.Shared.Exceptions;
 using Xmu.Crms.Web.ViceVersa.VO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
     [Route("/group")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GroupController : Controller
     {
         public readonly ISeminarGroupService _iSeminarGroupService;

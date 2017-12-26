@@ -175,8 +175,7 @@ namespace Xmu.Crms.ViceVersa
         public IActionResult PostStudentUnderClass(long classId, [FromBody]dynamic json)
         {
             //学生无法为他人选课（URL中ID与自身ID不同）
-            if (studentId!=User.Id()) return Forbid();
-
+            //if (studentId!=User.Id()) return Forbid();
             try
             {
                 var classSelectionId= _classService.InsertCourseSelectionById(User.Id(), classId);

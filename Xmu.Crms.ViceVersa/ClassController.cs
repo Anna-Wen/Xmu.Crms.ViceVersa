@@ -229,6 +229,15 @@ namespace Xmu.Crms.ViceVersa
                 if (studentName == null) studentName = "";
                 IList<UserInfo> studentList = _userService.ListUserByClassId(classId, studentNumber, studentName);
 
+                //找到学生所属小组
+                FixGroup fixGroup = _fixGroupService.GetFixedGroupById(User.Id(), classId);
+                if (fixGroup != null)
+                {
+                    IList<UserInfo> groupMember = _fixGroupService.ListFixGroupMemberByGroupId(fixGroup.Id);
+                    foreach (UserInfo u in groupMember)
+                        studentList.Remove(u);
+                }
+
                 List<UserVO> studentVO = new List<UserVO>();
                 foreach (UserInfo u in studentList)
                     studentVO.Add(u);
@@ -236,6 +245,8 @@ namespace Xmu.Crms.ViceVersa
                 return Json(studentVO);
             }
             catch (ClassNotFoundException) { return NotFound(new { msg = "未找到该班级！" }); }
+            catch (UserNotFoundException) { return NotFound(); }
+            catch (FixGroupNotFoundException) { return NotFound(); }
             catch (ArgumentException)
             {
                 return BadRequest();
@@ -256,6 +267,7 @@ namespace Xmu.Crms.ViceVersa
             {
                 //找到学生所属小组
                 FixGroup fixGroup= _fixGroupService.GetFixedGroupById(User.Id(), classId);
+                if (fixGroup == null) throw new FixGroupNotFoundException();
                 //得到组员
                 IList<UserInfo> groupMember = _fixGroupService.ListFixGroupMemberByGroupId(fixGroup.Id);
 

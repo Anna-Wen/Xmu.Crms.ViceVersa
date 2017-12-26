@@ -9,6 +9,7 @@ using Xmu.Crms.Shared.Service;
 using System.Linq;
 using Xmu.Crms.Web.ViceVersa.VO;
 using System;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Xmu.Crms.ViceVersa
 {
@@ -45,7 +46,7 @@ namespace Xmu.Crms.ViceVersa
             // 如果用户不存在，返回404
             catch (UserNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "该用户不存在！"});
             }
         }
 
@@ -85,8 +86,9 @@ namespace Xmu.Crms.ViceVersa
                         user.Education = null;
                 }
                 else
-                    return BadRequest();        //Type不为学生/老师，说明访问错误
-                                                //记录性别
+                    return BadRequest(new {msg = "用户访问错误：未注册用户！"});        //Type不为学生/老师，说明访问错误
+                
+                //记录性别
                 if (json.Gender == "male")
                     user.Gender = Gender.Male;
                 else
@@ -102,7 +104,7 @@ namespace Xmu.Crms.ViceVersa
             // 如果用户不存在，返回404
             catch (UserNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "该用户不存在！"});
             }
         }
 
@@ -120,6 +122,7 @@ namespace Xmu.Crms.ViceVersa
 
                 // 调用LoginService的SignInPhone方法
                 UserInfo signInUser = _loginService.SignInPhone(curUser);
+                HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, new ClaimsPrincipal());
 
                 // 返回SignInResult对象的Json
                 return Json(GenerateJwtAndSignInResult(signInUser));
@@ -127,12 +130,12 @@ namespace Xmu.Crms.ViceVersa
             // 如果用户不存在，返回404
             catch (UserNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "该用户不存在！"});
             }
             // 如果手机号/密码错误，返回401
             catch (PasswordErrorException)
             {
-                return Unauthorized();
+                return StatusCode(401, new { msg = "手机号/密码输入错误！" });
             }
         }
 
@@ -179,9 +182,9 @@ namespace Xmu.Crms.ViceVersa
                 return Json(GenerateJwtAndSignInResult(signUpUser));
             }
             // 如果注册用的手机号在数据库中存在，返回409
-            catch (PasswordErrorException)
+            catch (PhoneAlreadyExistsException)
             {
-                return StatusCode(409);
+                return StatusCode(409, new {msg = "该手机号已注册！"});
             }
         }
 

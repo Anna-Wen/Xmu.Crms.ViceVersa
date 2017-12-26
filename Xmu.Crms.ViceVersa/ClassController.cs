@@ -200,7 +200,7 @@ namespace Xmu.Crms.ViceVersa
         public IActionResult DeleteStudentUnderClass(long classId, long studentId)
         {
             //学生无法为他人退课（URL中ID与自身ID不同）
-           // if (studentId!=User.Id()) return Forbid();
+            if (studentId != User.Id()) return Forbid();
 
             try
             {

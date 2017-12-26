@@ -20,10 +20,12 @@ namespace Xmu.Crms.ViceVersa
         private readonly IUserService _userService;
         private readonly IFixGroupService _fixGroupService;
 
-           public ClassController(IClassService classService,ICourseService courseService)
+        public ClassController(IClassService classService,ICourseService courseService,IUserService userService,IFixGroupService fixGroupService)
         {
             _classService = classService;
             _courseService = courseService;
+            _userService = userService;
+            _fixGroupService = fixGroupService;
         }
 
         // GET: /class?courseName={courseName}&courseTeacher={courseTeacher}
@@ -34,7 +36,7 @@ namespace Xmu.Crms.ViceVersa
             if (courseName == null && courseTeacher == null)
             {
                 //IList<ClassInfo> classList = _classService.ListClassByUserId(User.Id());
-                IList<ClassInfo> classList = _classService.ListClassByUserId(4);//测试数据
+                IList<ClassInfo> classList = _classService.ListClassByUserId(5);//测试数据
 
                 List<CourseClassVO> classes = new List<CourseClassVO>();
                 foreach (ClassInfo c in classList)

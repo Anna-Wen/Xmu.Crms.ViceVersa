@@ -134,7 +134,12 @@ namespace Xmu.Crms.ViceVersa
 
                         for (int row = 1; row <= rowCount; row++)
                         {
-                            UserInfo user = new UserInfo { Number = worksheet.Cells[row, 1].Value.ToString(), Name = worksheet.Cells[row, 2].Value.ToString(), Type = Shared.Models.Type.Student, School = teacher.School };
+                            UserInfo user = null;
+                            if (worksheet.Cells[row, 1].Value != null && worksheet.Cells[row, 2].Value != null)
+                                user = new UserInfo { Number = worksheet.Cells[row, 1].Value.ToString(), Name = worksheet.Cells[row, 2].Value.ToString(), Type = Shared.Models.Type.Student, School = teacher.School };
+
+                            if (user == null)
+                                break;
 
                             // 先去找数据库中是否有这样一个User
                             try
@@ -155,7 +160,7 @@ namespace Xmu.Crms.ViceVersa
                 }
                 catch (Exception)
                 {
-                    throw;
+                    return StatusCode(500, new { id = classId });
                 }
 
             }

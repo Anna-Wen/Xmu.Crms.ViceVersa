@@ -276,6 +276,10 @@ namespace Xmu.Crms.ViceVersa
             {
                 return BadRequest(new { msg = "错误的ID格式！" });
             }
+            catch(InvalidCastException)
+            {
+                return null;
+            }
         }
 
         // GET: /course/{courseId}/seminar?embedGrade=false

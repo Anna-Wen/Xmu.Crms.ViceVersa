@@ -323,13 +323,19 @@ namespace Xmu.Crms.ViceVersa
 
             try
             {
+                //Convert.ToDateTime(json.StartTime);
+                string startTime = json.StartTime;
+                startTime= startTime.Replace("-", "/");
+                string endTime = json.EndTime;
+                endTime= endTime.Replace("-", "/");
+
                 //Get information from json
                 // 所以获得的组内限制和组内人数上限存在哪个实体里？？？
                 Seminar newSeminar;
-                if (json.GroupingMethod == "固定分组")
-                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = true, StartTime = Convert.ToDateTime(json.StartTime), EndTime = Convert.ToDateTime(json.EndTime) };
+                if (json.GroupingMethod == "fixed")
+                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = true, StartTime = Convert.ToDateTime(startTime), EndTime = Convert.ToDateTime(endTime) };
                 else
-                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = false, StartTime = Convert.ToDateTime(json.StartTime), EndTime = Convert.ToDateTime(json.EndTime) };
+                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = false, StartTime = Convert.ToDateTime(startTime), EndTime = Convert.ToDateTime(endTime) };
 
                 // Store seminar information in server and generate a id for this new seminar
                 long newSeminarId = _iSeminarService.InsertSeminarByCourseId(courseId, newSeminar);

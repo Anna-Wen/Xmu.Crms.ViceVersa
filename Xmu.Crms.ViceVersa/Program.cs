@@ -17,11 +17,14 @@ namespace Xmu.Crms.ViceVersa
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseIISIntegration()
-                .ConfigureServices(services => services.AddViceVersaClassService().AddViceVersaClassDao().
-                                               AddViceVersaGradeDao().AddViceVersaGradeService().
-                                               AddViceVersaCourseDao().AddViceVersaCourseService().
-                                               AddHighGradeSchoolService().AddHighGradeSchoolService().AddHighGradeSeminarService().
-                                               AddCrmsView("Web.ViceVersa"))
+                .ConfigureServices(services => services.AddViceVersaClassService().AddViceVersaClassDao()
+                                                .AddViceVersaGradeDao().AddViceVersaGradeService()
+                                                .AddViceVersaCourseDao().AddViceVersaCourseService()
+                                                .AddHighGradeSchoolService().AddHighGradeSchoolService().AddHighGradeSeminarService()
+                                                .AddInsomniaFixedGroupService().AddInsomniaSeminarGroupService()
+                                                //.AddInsomniaPbkdf2LoginService().AddInsomniaLoginService().AddInsomniaUserService().AddInsomniaTopicService()
+                                                .AddGroup1SchoolService().AddGroup1TopicService().AddGroup1UserService()
+                                                .AddCrmsView("Web.ViceVersa"))
                 .UseStartup<Startup>()
                 .Build();
     }

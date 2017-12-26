@@ -10,6 +10,14 @@
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
+  
+  <ItemGroup>
+    <Compile Remove="新文件夹\**" />
+    <Content Remove="新文件夹\**" />
+    <EmbeddedResource Remove="新文件夹\**" />
+    <None Remove="新文件夹\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.1" />
@@ -25,6 +33,11 @@
     <ProjectReference Include="..\Xmu.Crms.Shared\Xmu.Crms.Shared.csproj" />
     <ProjectReference Include="..\Xmu.Crms.Web.ViceVersa\Xmu.Crms.Web.ViceVersa.csproj" />
     <PackageReference Update="Microsoft.NETCore.App" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\report\" />
+    <Folder Include="wwwroot\roster\" />
   </ItemGroup>
   
     <Target Name="CopyDepsFiles" AfterTargets="Build" Condition="'$(TargetFramework)'!=''">

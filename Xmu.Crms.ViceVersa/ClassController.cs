@@ -223,6 +223,8 @@ namespace Xmu.Crms.ViceVersa
         {
             try
             {
+                if (studentNumber == null) studentNumber = "";
+                if (studentName == null) studentName = "";
                 IList<UserInfo> studentList = _userService.ListUserByClassId(classId, studentNumber, studentName);
 
                 List<UserVO> studentVO = new List<UserVO>();
@@ -231,11 +233,12 @@ namespace Xmu.Crms.ViceVersa
 
                 return Json(studentVO);
             }
-            catch (ClassNotFoundException) { return NotFound(new {msg = "未找到该班级！"}); }
+            catch (ClassNotFoundException) { return NotFound(new { msg = "未找到该班级！" }); }
             catch (ArgumentException)
             {
                 return BadRequest();
             }
+            
         }
 
 

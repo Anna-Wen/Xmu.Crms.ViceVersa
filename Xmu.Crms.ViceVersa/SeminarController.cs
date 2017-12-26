@@ -54,12 +54,12 @@ namespace Xmu.Crms.ViceVersa
             //If seminar not found, 返回404
             catch (SeminarNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该讨论课！" });
             }
             //seminarId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -70,7 +70,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法修改讨论课，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法修改讨论课！" });
 
             try
             {
@@ -91,12 +91,12 @@ namespace Xmu.Crms.ViceVersa
             //If seminar not found, 返回404
             catch (SeminarNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该讨论课！" });
             }
             //seminarId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -107,7 +107,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法删除讨论课，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法删除讨论课！" });
 
             try
             {
@@ -121,12 +121,12 @@ namespace Xmu.Crms.ViceVersa
             //If seminar not found, 返回404
             catch (SeminarNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该讨论课！" });
             }
             //seminarId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -167,12 +167,12 @@ namespace Xmu.Crms.ViceVersa
             //If seminar not found, 返回404
             catch (SeminarNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该讨论课！" });
             }
             //seminarId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -183,7 +183,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法创建话题，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法创建话题！" });
 
             try
             {
@@ -205,12 +205,12 @@ namespace Xmu.Crms.ViceVersa
             //If seminar not found, 返回404
             catch (SeminarNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该讨论课！" });
             }
             //seminarId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -262,12 +262,12 @@ namespace Xmu.Crms.ViceVersa
             //If seminar not found, 返回404
             catch (SeminarNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该讨论课！" });
             }
             //seminarId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -278,7 +278,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 老师无法使用此API，返回403
             if (User.Type() == Shared.Models.Type.Teacher)
-                return Forbid();
+                return StatusCode(403, new { msg = "老师无法获得自己的小组信息！" });
 
             try
             {
@@ -313,15 +313,20 @@ namespace Xmu.Crms.ViceVersa
                 // Success
                 return Json(myGroup);
             }
+            //If seminar not found, 返回404
+            catch (SeminarNotFoundException)
+            {
+                return NotFound(new { msg = "未找到该讨论课！" });
+            }
             //If group not found, 返回404
             catch (GroupNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "讨论课尚未分组！" });
             }
             //seminarId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 

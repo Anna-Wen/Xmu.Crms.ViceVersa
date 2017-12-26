@@ -65,25 +65,31 @@ namespace Xmu.Crms.ViceVersa
                 {
                     user.Type = Shared.Models.Type.Teacher;
                     //修改职称
-                    if (json.Title == "教授")
-                        user.Title = Title.Professer;
-                    else
-                        user.Title = Title.Other;
+                    if (json.Title != "")
+                    {
+                        if (json.Title == "教授")
+                            user.Title = Title.Professer;
+                        else
+                            user.Title = Title.Other;
+                    }
+                    else user.Title = null;
                 }
                 else if (json.Type == "student")
                 {
                     user.Type = Shared.Models.Type.Student;
 
                     //修改学历
-                    if (json.Title == "本科生" || json.Title == "本科")
-                        user.Education = Education.Bachelor;
-                    else if (json.Title == "研究生")
-                        user.Education = Education.Master;
-                    else if (json.Title == "博士生" || "博士")
-                        user.Education = Education.Doctor;
-                    // 其余的填空情况怎么处理？？？
-                    else
-                        user.Education = null;
+                    if (json.Title != "")
+                    {
+                        if (json.Title == "本科生" || json.Title == "本科")
+                            user.Education = Education.Bachelor;
+                        else if (json.Title == "研究生")
+                            user.Education = Education.Master;
+                        else if (json.Title == "博士生" || json.Title == "博士")
+                            user.Education = Education.Doctor;
+                        // 其余的填空情况怎么处理？？？
+                    }
+                    else user.Education=null;
                 }
                 else
                     return BadRequest(new {msg = "用户访问错误：未注册用户！"});        //Type不为学生/老师，说明访问错误
@@ -93,7 +99,7 @@ namespace Xmu.Crms.ViceVersa
                     user.Gender = Gender.Male;
                 else
                     user.Gender = Gender.Female;
-
+                
                 // Update database
                 // 调用UserService中的UpdateUserByUserId方法
                 _userService.UpdateUserByUserId(User.Id(), user);
@@ -104,7 +110,11 @@ namespace Xmu.Crms.ViceVersa
             // 如果用户不存在，返回404
             catch (UserNotFoundException)
             {
-                return NotFound(new {msg = "该用户不存在！"});
+                return NotFound(Json(new {msg = "该用户不存在！"}));
+            }
+            catch (Exception)
+            {
+                return NotFound(Json(new ErrorMessage{ Msg = "该学校不存在！" }));
             }
         }
 
@@ -173,7 +183,6 @@ namespace Xmu.Crms.ViceVersa
                     Phone = json.Phone,
                     Password = json.Password
                 };
-
                 // 调用LoginService的SignUpPhone方法
                 UserInfo signUpUser = _loginService.SignUpPhone(curUser);
 

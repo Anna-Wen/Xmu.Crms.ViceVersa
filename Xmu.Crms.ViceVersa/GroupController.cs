@@ -5,11 +5,14 @@ using Xmu.Crms.Shared.Service;
 using System;
 using Xmu.Crms.Shared.Exceptions;
 using Xmu.Crms.Web.ViceVersa.VO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Xmu.Crms.ViceVersa
 {
     [Produces("application/json")]
     [Route("/group")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GroupController : Controller
     {
         public readonly ISeminarGroupService _iSeminarGroupService;
@@ -164,7 +167,7 @@ namespace Xmu.Crms.ViceVersa
             try
             {
                 //验证是不是组长【json会传UserId回来吗？】
-                long userId = json.id;
+                long userId = User.Id();
                 //FixGroup fixGroup = _iFixGroupService.GetFixGroupByGroupId(groupId);//没有这个方法
                 IList<FixGroupMember> fixGroupMemberList = _iFixGroupService.ListFixGroupByGroupId(groupId);
                 if (fixGroupMemberList == null)

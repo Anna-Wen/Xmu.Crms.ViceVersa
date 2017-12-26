@@ -120,11 +120,28 @@ namespace Xmu.Crms.ViceVersa
                 classInfo.ClassTime = json.Time;
                 classInfo.Site = json.Site;
                 classInfo.Name = json.Name;
-                classInfo.ReportPercentage = json.Proportions.Report;
-                classInfo.PresentationPercentage = json.Proportions.Presentation;
-                classInfo.ThreePointPercentage = json.Proportions.C;
-                classInfo.FourPointPercentage = json.Proportions.B;
-                classInfo.FivePointPercentage = json.Proportions.A;
+                if (json.Proportions.Report == "")
+                    classInfo.ReportPercentage = null;
+                else
+                    classInfo.ReportPercentage = json.Proportions.Report;
+                if (json.Proportions.Presentation == "")
+                    classInfo.PresentationPercentage = null;
+                else
+                    classInfo.PresentationPercentage = json.Proportions.Presentation;
+                if (json.Proportions.A == "")
+                    classInfo.ThreePointPercentage = null;
+                else
+                    classInfo.ThreePointPercentage = json.Proportions.A;
+                if (json.Proportions.B == "")
+                    classInfo.FourPointPercentage = null;
+                else
+                    classInfo.FourPointPercentage = json.Proportions.B;
+                if (json.Proportions.C == "")
+                    classInfo.FivePointPercentage = null;
+                else
+                    classInfo.FivePointPercentage = json.Proportions.C;
+
+
 
                 _classService.UpdateClassByClassId(classId,classInfo);
                
@@ -177,8 +194,6 @@ namespace Xmu.Crms.ViceVersa
             //学生无法为他人选课（URL中ID与自身ID不同）
 
             if (json.Id!=User.Id()) return Forbid();
-
-
             try
             {
                 var classSelectionId= _classService.InsertCourseSelectionById(User.Id(), classId);

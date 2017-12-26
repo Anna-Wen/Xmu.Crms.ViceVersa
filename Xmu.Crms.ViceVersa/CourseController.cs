@@ -287,7 +287,7 @@ namespace Xmu.Crms.ViceVersa
         }
 
         // GET: /course/{courseId}/seminar?embedGrade=false
-        // 不需要实现学生查看分数：embed=true ？？？
+        // 不需要实现学生查看分数：embed=true???
         [HttpGet("{courseId}/seminar")]
         public IActionResult GetSeminarList(long courseId, [FromQuery]bool embedGrade = false)
         {

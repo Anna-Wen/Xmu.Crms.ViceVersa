@@ -11,3 +11,11 @@
 	url = https://github.com/Anna-Wen/Xmu.Crms.Web.ViceVersa.git
 	branch = master
 
+[submodule "Xmu.Crms.Services.Insomnia"]
+	path = Xmu.Crms.Services.Insomnia
+	url = https://github.com/Anna-Wen/Xmu.Crms.Services.Insomnia.git
+	branch = master
+[submodule "Xmu.Crms.Services.HighGrade"]
+	path = Xmu.Crms.Services.HighGrade
+	url = https://github.com/Anna-Wen/Xmu.Crms.Services.HighGrade.git
+	branch = master

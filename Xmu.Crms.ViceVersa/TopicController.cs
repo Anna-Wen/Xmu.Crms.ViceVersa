@@ -43,12 +43,12 @@ namespace Xmu.Crms.ViceVersa
             //If topic not found, 返回404
             catch (TopicNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该话题！" });
             }
             //topicId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -59,7 +59,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法修改话题，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法修改话题！" });
 
             try
             {
@@ -80,12 +80,12 @@ namespace Xmu.Crms.ViceVersa
             //If topic not found, 返回404
             catch (TopicNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该话题！" });
             }
             //topicId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -96,7 +96,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法删除话题，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法删除话题！" });
 
             try
             {
@@ -110,12 +110,12 @@ namespace Xmu.Crms.ViceVersa
             //If topic not found, 返回404
             catch (TopicNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该话题！" });
             }
             //topicId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -165,12 +165,12 @@ namespace Xmu.Crms.ViceVersa
             //If topic not found, 返回404
             catch (TopicNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该话题！" });
             }
             //topicId 格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
     }

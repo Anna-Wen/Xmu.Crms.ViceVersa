@@ -64,17 +64,9 @@ namespace Xmu.Crms.ViceVersa
 
                 return Json(courseVOList);
             }
-            catch(CourseNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (ClassNotFoundException)
-            {
-                return NotFound();
-            }
             catch (UserNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "该用户不存在！"});
             }
             //catch
             //{
@@ -89,7 +81,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法创建课程，返回403
             if(User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法创建课程！" });
 
             Course newCourse = null;
             string uri = null;
@@ -108,11 +100,7 @@ namespace Xmu.Crms.ViceVersa
             }
             catch (UserNotFoundException)
             {
-                return NotFound();
-            }
-            catch (ArgumentException)
-            {
-                return BadRequest();
+                return NotFound(new {msg = "该用户不存在！"});
             }
             //catch (Exception)
             //{
@@ -136,12 +124,12 @@ namespace Xmu.Crms.ViceVersa
             //If not found, 返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             //courseId格式错误，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
             //catch (Exception)
             //{
@@ -156,7 +144,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法修改课程，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法修改课程！" });
 
             try
             {
@@ -170,9 +158,15 @@ namespace Xmu.Crms.ViceVersa
                 //Success
                 return NoContent();
             }
+            //If not found, 返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
+            }
+            //courseId格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
             //catch (Exception)
             //{
@@ -187,7 +181,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法删除课程，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法删除课程！" });
 
             try
             {
@@ -201,12 +195,12 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             //错误的ID格式，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
             //catch (Exception)
             //{
@@ -233,17 +227,12 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
-            }
-            // 未找到班级，返回404
-            catch (ClassNotFoundException)
-            {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             //错误的ID格式，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -254,7 +243,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法创建班级，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法创建班级！" });
 
             try
             {
@@ -277,12 +266,12 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             // 错误的ID格式，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -294,7 +283,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 若教师设置embedGrade为true，返回400
             if (User.Type() == Shared.Models.Type.Teacher && embedGrade == true)
-                return BadRequest();
+                return BadRequest(new { msg = "教师错误的访问！" });
 
             try
             {
@@ -314,12 +303,12 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             // 错误的ID格式，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -330,7 +319,7 @@ namespace Xmu.Crms.ViceVersa
             // Authentication
             // 学生无法创建讨论课，返回403
             if (User.Type() == Shared.Models.Type.Student)
-                return Forbid();
+                return StatusCode(403, new { msg = "学生无法创建讨论课！" });
 
             try
             {
@@ -352,12 +341,12 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该课程！" });
             }
             // 错误的ID格式，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
 
@@ -409,12 +398,12 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new { msg = "未找到该课程！" });
             }
             // 错误的ID格式，返回400
             catch (ArgumentException)
             {
-                return BadRequest();
+                return BadRequest(new { msg = "错误的ID格式！" });
             }
         }
     }

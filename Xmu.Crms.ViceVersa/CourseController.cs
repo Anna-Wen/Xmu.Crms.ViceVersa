@@ -182,7 +182,7 @@ namespace Xmu.Crms.ViceVersa
             // 学生无法删除课程，返回403
             if (User.Type() == Shared.Models.Type.Student)
                 return StatusCode(403, new { msg = "学生无法删除课程！" });
-
+            long id = courseId;//================
             try
             {
                 //Delete course from database

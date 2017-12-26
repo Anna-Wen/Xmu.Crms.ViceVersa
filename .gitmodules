@@ -19,3 +19,7 @@
 	path = Xmu.Crms.Services.HighGrade
 	url = https://github.com/Anna-Wen/Xmu.Crms.Services.HighGrade.git
 	branch = master
+[submodule "Xmu.Crms.Services.Group1"]
+	path = Xmu.Crms.Services.Group1
+	url = https://github.com/Anna-Wen/Xmu.Crms.Services.Group1.git
+	branch = master

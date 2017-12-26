@@ -20,7 +20,7 @@ namespace Xmu.Crms.ViceVersa
         private readonly IUserService _userService;
         private readonly IFixGroupService _fixGroupService;
 
-           public ClassController(IClassService classService,ICourseService courseService,IUserService userService,IFixGroupService fixGroupService)
+        public ClassController(IClassService classService,ICourseService courseService,IUserService userService,IFixGroupService fixGroupService)
         {
             _classService = classService;
             _courseService = courseService;

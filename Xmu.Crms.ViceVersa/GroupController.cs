@@ -164,7 +164,7 @@ namespace Xmu.Crms.ViceVersa
             try
             {
                 //验证是不是组长【json会传UserId回来吗？】
-                long userId = json.id;
+                long userId = User.Id();
                 //FixGroup fixGroup = _iFixGroupService.GetFixGroupByGroupId(groupId);//没有这个方法
                 IList<FixGroupMember> fixGroupMemberList = _iFixGroupService.ListFixGroupByGroupId(groupId);
                 if (fixGroupMemberList == null)

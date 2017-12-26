@@ -64,17 +64,9 @@ namespace Xmu.Crms.ViceVersa
 
                 return Json(courseVOList);
             }
-            catch(CourseNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (ClassNotFoundException)
-            {
-                return NotFound();
-            }
             catch (UserNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "该用户不存在！"});
             }
             //catch
             //{
@@ -108,7 +100,7 @@ namespace Xmu.Crms.ViceVersa
             }
             catch (UserNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "该用户不存在！"});
             }
             catch (ArgumentException)
             {
@@ -136,7 +128,7 @@ namespace Xmu.Crms.ViceVersa
             //If not found, 返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             //courseId格式错误，返回400
             catch (ArgumentException)
@@ -170,9 +162,15 @@ namespace Xmu.Crms.ViceVersa
                 //Success
                 return NoContent();
             }
+            //If not found, 返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
+            }
+            //courseId格式错误，返回400
+            catch (ArgumentException)
+            {
+                return BadRequest();
             }
             //catch (Exception)
             //{
@@ -201,7 +199,7 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             //错误的ID格式，返回400
             catch (ArgumentException)
@@ -233,12 +231,7 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
-            }
-            // 未找到班级，返回404
-            catch (ClassNotFoundException)
-            {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             //错误的ID格式，返回400
             catch (ArgumentException)
@@ -277,7 +270,7 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             // 错误的ID格式，返回400
             catch (ArgumentException)
@@ -314,7 +307,7 @@ namespace Xmu.Crms.ViceVersa
             // 未找到课程，返回404
             catch (CourseNotFoundException)
             {
-                return NotFound();
+                return NotFound(new {msg = "未找到该课程！"});
             }
             // 错误的ID格式，返回400
             catch (ArgumentException)

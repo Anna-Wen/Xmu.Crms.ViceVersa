@@ -251,13 +251,28 @@ namespace Xmu.Crms.ViceVersa
             try
             {
                 //Get information from json
-                GradeProportionVO proportions = new GradeProportionVO();
+                ClassInfo newClass = new ClassInfo
+                {
+                    Name = json.Name,
+                    Site = json.Site,
+                    ClassTime = json.Time
+                };
                 if (json.Proportions != null && json.Proportions.Report != "" && json.Proportions.Presentation != "" && json.Proportions.C != "" && json.Proportions.B != "" && json.Proportions.A != "")
                 {
-                    proportions = new GradeProportionVO { Report = json.Proportions.Report, Presentation = json.Proportions.Presentation, C = json.Proportions.C, B = json.Proportions.B, A = json.Proportions.A };
+                    newClass.ReportPercentage = json.Proportions.Report;
+                    newClass.PresentationPercentage = json.Proportions.Presentation;
+                    newClass.FivePointPercentage = json.Proportions.C;
+                    newClass.FourPointPercentage = json.Proportions.B;
+                    newClass.ThreePointPercentage = json.Proportions.A;
                 }
-                // 导入学生名单怎么办？？？
-                ClassInfo newClass = new ClassInfo { Name = json.Name, Site = json.Site, ClassTime = json.Time, ReportPercentage = proportions.Report, PresentationPercentage = proportions.Presentation, FivePointPercentage = proportions.C, FourPointPercentage = proportions.B, ThreePointPercentage = proportions.A };
+                else
+                {
+                    newClass.ReportPercentage = 0;
+                    newClass.PresentationPercentage = 0;
+                    newClass.FivePointPercentage = 0;
+                    newClass.FourPointPercentage = 0;
+                    newClass.ThreePointPercentage = 0;
+                }
 
                 // Store class information in server and generate a id for this new class
                 long newClassId = _iCourseService.InsertClassById(courseId, newClass);

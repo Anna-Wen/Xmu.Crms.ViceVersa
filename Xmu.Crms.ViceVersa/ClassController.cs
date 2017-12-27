@@ -193,7 +193,7 @@ namespace Xmu.Crms.ViceVersa
         {
             //学生无法为他人选课（URL中ID与自身ID不同）
 
-            if (json.Id!=User.Id()) return Forbid();
+            //if (json.Id!=User.Id()) return Forbid();//不存在
             try
             {
                 var classSelectionId= _classService.InsertCourseSelectionById(User.Id(), classId);
@@ -217,11 +217,11 @@ namespace Xmu.Crms.ViceVersa
         public IActionResult DeleteStudentUnderClass(long classId, long studentId)
         {
             //学生无法为他人退课（URL中ID与自身ID不同）
-            if (studentId != User.Id()) return Forbid();
+            //if (studentId != User.Id()) return Forbid();
 
             try
             {
-                _classService.DeleteCourseSelectionById(studentId, classId);
+                _classService.DeleteCourseSelectionById(User.Id(), classId);
 
                 //Success
                 return NoContent();

@@ -338,7 +338,7 @@ namespace Xmu.Crms.ViceVersa
             {
                 //Authentication  权限不足（不是该小组的成员/组长）
                 FixGroup fixGroup = _fixGroupService.GetFixedGroupById(User.Id(), classId);
-                if (fixGroup.LeaderId!=User.Id())
+                if (fixGroup.LeaderId!=User.Id() || json.StudentId == User.Id())
                     return Forbid();
 
                 long studentId = json.StudentId;

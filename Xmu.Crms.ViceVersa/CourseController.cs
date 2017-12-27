@@ -393,7 +393,9 @@ namespace Xmu.Crms.ViceVersa
                     foreach (SeminarGroupTopic sgt in seminarGroupTopicList)
                     {
                         topics.Add(sgt.Topic);
-                        pGrades.Add((int)sgt.PresentationGrade);
+                        if (sgt.PresentationGrade != null)
+                            pGrades.Add((int)sgt.PresentationGrade);
+                        else pGrades.Add(0);
                     }
                     g.Topics = topics;
                     g.Grade.PresentationGrade = pGrades;
@@ -401,7 +403,7 @@ namespace Xmu.Crms.ViceVersa
                     //获取Name
                     g.GetName();
 
-                    SeminarGradeDetailVO seminarGradeDetailVO = new SeminarGradeDetailVO { SeminarName = i.Seminar.Name, GroupName = g.Name, LeaderName = i.Leader.Name, PresentationGrade = (int)i.PresentationGrade, ReportGrade = (int)i.ReportGrade, Grade = (int)i.FinalGrade };
+                    SeminarGradeDetailVO seminarGradeDetailVO = new SeminarGradeDetailVO { SeminarName = i.Seminar.Name, GroupName = g.Name, LeaderName = i.Leader.Name, PresentationGrade = i.PresentationGrade==null?0:(int)i.PresentationGrade, ReportGrade = i.ReportGrade == null ? 0 : (int)i.ReportGrade, Grade = i.FinalGrade == null ? 0 : (int)i.FinalGrade };
                     seminarGrades.Add(seminarGradeDetailVO);
                 }
 

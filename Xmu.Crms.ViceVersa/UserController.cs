@@ -99,13 +99,29 @@ namespace Xmu.Crms.ViceVersa
                     user.Gender = Gender.Male;
                 else
                     user.Gender = Gender.Female;
-                
+
                 // Update database
-                // 调用UserService中的UpdateUserByUserId方法
-                _userService.UpdateUserByUserId(User.Id(), user);
+                // 先去获得这个对象
+                UserInfo dataUser = _userService.GetUserByUserId(User.Id());
+                
+                // 如果是未注册状态
+                if (dataUser.Type == Shared.Models.Type.Unbinded)
+                {
+                    // 调用UserService中的UpdateUserByUserId方法
+                    _userService.UpdateUserByUserId(User.Id(), user);
 
-                return NoContent();
+                    dataUser = _userService.GetUserByUserId(User.Id());
 
+                    // 生成正确的Jwt
+                    return Json(GenerateJwtAndSignInResult(dataUser));
+                }
+                else
+                {
+                    // 调用UserService中的UpdateUserByUserId方法
+                    _userService.UpdateUserByUserId(User.Id(), user);
+
+                    return NoContent();
+                }
             }
             // 如果用户不存在，返回404
             catch (UserNotFoundException)
@@ -181,9 +197,11 @@ namespace Xmu.Crms.ViceVersa
                 UserInfo curUser = new UserInfo
                 {
                     Phone = json.Phone,
-                    Password = json.Password
+                    Password = json.Password,
+                    Number = json.Number
                 };
                 // 调用LoginService的SignUpPhone方法
+                // 会判断该学生/老师是否在数据库存在了
                 UserInfo signUpUser = _loginService.SignUpPhone(curUser);
 
                 // 返回SignInResult对象的Json

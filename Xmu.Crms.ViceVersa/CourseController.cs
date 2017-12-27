@@ -251,20 +251,35 @@ namespace Xmu.Crms.ViceVersa
             try
             {
                 //Get information from json
-                GradeProportionVO proportions = new GradeProportionVO();
+                ClassInfo newClass = new ClassInfo
+                {
+                    Name = json.Name,
+                    Site = json.Site,
+                    ClassTime = json.Time
+                };
                 if (json.Proportions != null && json.Proportions.Report != "" && json.Proportions.Presentation != "" && json.Proportions.C != "" && json.Proportions.B != "" && json.Proportions.A != "")
                 {
-                    proportions = new GradeProportionVO { Report = json.Proportions.Report, Presentation = json.Proportions.Presentation, C = json.Proportions.C, B = json.Proportions.B, A = json.Proportions.A };
+                    newClass.ReportPercentage = json.Proportions.Report;
+                    newClass.PresentationPercentage = json.Proportions.Presentation;
+                    newClass.FivePointPercentage = json.Proportions.C;
+                    newClass.FourPointPercentage = json.Proportions.B;
+                    newClass.ThreePointPercentage = json.Proportions.A;
                 }
-                // 导入学生名单怎么办？？？
-                ClassInfo newClass = new ClassInfo { Name = json.Name, Site = json.Site, ClassTime = json.Time, ReportPercentage = proportions.Report, PresentationPercentage = proportions.Presentation, FivePointPercentage = proportions.C, FourPointPercentage = proportions.B, ThreePointPercentage = proportions.A };
+                else
+                {
+                    newClass.ReportPercentage = 0;
+                    newClass.PresentationPercentage = 0;
+                    newClass.FivePointPercentage = 0;
+                    newClass.FourPointPercentage = 0;
+                    newClass.ThreePointPercentage = 0;
+                }
 
                 // Store class information in server and generate a id for this new class
                 long newClassId = _iCourseService.InsertClassById(courseId, newClass);
 
                 // Return class id
                 string uri = "/class/" + newClassId;
-                return Created(uri, newClass);
+                return Created(uri, new { id = newClassId });
             }
             // 未找到课程，返回404
             catch (CourseNotFoundException)
@@ -330,13 +345,19 @@ namespace Xmu.Crms.ViceVersa
 
             try
             {
+                //Convert.ToDateTime(json.StartTime);
+                string startTime = json.StartTime;
+                startTime= startTime.Replace("-", "/");
+                string endTime = json.EndTime;
+                endTime= endTime.Replace("-", "/");
+
                 //Get information from json
                 // 所以获得的组内限制和组内人数上限存在哪个实体里？？？
                 Seminar newSeminar;
-                if (json.GroupingMethod == "固定分组")
-                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = true, StartTime = Convert.ToDateTime(json.StartTime), EndTime = Convert.ToDateTime(json.EndTime) };
+                if (json.GroupingMethod == "fixed")
+                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = true, StartTime = Convert.ToDateTime(startTime), EndTime = Convert.ToDateTime(endTime) };
                 else
-                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = false, StartTime = Convert.ToDateTime(json.StartTime), EndTime = Convert.ToDateTime(json.EndTime) };
+                    newSeminar = new Seminar { Name = json.Name, Description = json.Description, IsFixed = false, StartTime = Convert.ToDateTime(startTime), EndTime = Convert.ToDateTime(endTime) };
 
                 // Store seminar information in server and generate a id for this new seminar
                 long newSeminarId = _iSeminarService.InsertSeminarByCourseId(courseId, newSeminar);

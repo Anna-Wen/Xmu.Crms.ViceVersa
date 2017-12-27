@@ -203,7 +203,7 @@ namespace Xmu.Crms.ViceVersa
 
                 // Return topic id
                 string uri = "/topic/" + newTopicId;
-                return Created(uri, newTopic);
+                return Created(uri, newTopicId);
             }
             //If seminar not found, 返回404
             catch (SeminarNotFoundException)
@@ -230,7 +230,7 @@ namespace Xmu.Crms.ViceVersa
 
                 // 转换成VO对象
                 List<GroupVO> groups = new List<GroupVO>();
-                foreach (SeminarGroup sg in seminarGroupList)
+                foreach (var sg in seminarGroupList)
                 {
                     GroupVO g = sg;
 
@@ -247,8 +247,12 @@ namespace Xmu.Crms.ViceVersa
                     List<int> pGrades = new List<int>();
                     foreach (SeminarGroupTopic sgt in seminarGroupTopicList)
                     {
-                        topics.Add(sgt.Topic);
-                        pGrades.Add((int)sgt.PresentationGrade);
+                        if(sgt.Topic!=null)
+                        {
+                            topics.Add(sgt.Topic);
+                            if(sgt.PresentationGrade!=null)
+                                pGrades.Add((int)sgt.PresentationGrade);
+                        }
                     }
                     g.Topics = topics;
                     g.Grade.PresentationGrade = pGrades;

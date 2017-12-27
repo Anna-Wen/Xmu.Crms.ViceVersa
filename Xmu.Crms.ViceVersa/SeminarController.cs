@@ -203,7 +203,7 @@ namespace Xmu.Crms.ViceVersa
 
                 // Return topic id
                 string uri = "/topic/" + newTopicId;
-                return Created(uri, newTopic);
+                return Created(uri, newTopicId);
             }
             //If seminar not found, 返回404
             catch (SeminarNotFoundException)

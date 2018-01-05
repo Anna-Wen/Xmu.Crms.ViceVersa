@@ -7,10 +7,13 @@ using System;
 
 namespace Xmu.Crms.ViceVersa
 {
-
+    /// <summary>
+    /// API Controllet
+    /// 存放路由为"/school"下的与学校信息操作相关的方法控制器
+    /// @author Group ViceVersa
+    /// </summary>
     [Produces("application/json")]
     [Route("/school")]
-
     public class SchoolController : Controller
     {
         public readonly ISchoolService _iSchoolService;
@@ -19,7 +22,11 @@ namespace Xmu.Crms.ViceVersa
             _iSchoolService = iSchoolService;
         }
 
-        // GET: /school?city={city}
+        /// <summary>
+        /// GET: /school?city={city}
+        /// </summary>
+        /// <param name="city">城市名称</param>
+        /// <returns>返回该城市的学校相关信息</returns>
         [HttpGet]
         public IActionResult GetSchoolViaCity([FromQuery]string city)
         {
@@ -44,7 +51,11 @@ namespace Xmu.Crms.ViceVersa
             }
         }
         
-        // POST: /school
+        /// <summary>
+        /// POST: /school
+        /// </summary>
+        /// <param name="json">创建学校的信息</param>
+        /// <returns>学校id</returns>
         [HttpPost]
         public IActionResult PostNewSchool([FromBody]dynamic json)
         {

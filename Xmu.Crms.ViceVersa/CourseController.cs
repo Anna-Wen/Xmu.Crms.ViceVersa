@@ -10,6 +10,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Xmu.Crms.ViceVersa
 {
+    /// <summary>
+    /// API Controller
+    /// 存放路由为"/course"下的与课程操作相关的方法的控制器
+    /// @author Group ViceVersa
+    /// </summary>
     [Produces("application/json")]
     [Route("/course")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -34,7 +39,10 @@ namespace Xmu.Crms.ViceVersa
             _iSeminarGroupService = iSeminarGroupService;
         }
 
-        // GET: /course
+        /// <summary>
+        /// GET: /course
+        /// </summary>
+        /// <returns>与当前用户相关的课程列表</returns>
         [HttpGet]
         public IActionResult GetCourses()
         {
@@ -76,8 +84,11 @@ namespace Xmu.Crms.ViceVersa
             //}
         }
 
-
-        // POST: /course
+        /// <summary>
+        /// POST: /course
+        /// </summary>
+        /// <param name="json">传入课程相关信息</param>
+        /// <returns>创建成功，返回课程的ID</returns>
         [HttpPost]
         public IActionResult PostCourse([FromBody]dynamic json)
         {
@@ -110,8 +121,11 @@ namespace Xmu.Crms.ViceVersa
             //}
         }
 
-
-        // GET: /course/{courseId}
+        /// <summary>
+        /// GET: /course/{courseId}
+        /// </summary>
+        /// <param name="courseId">课程ID</param>
+        /// <returns>根据ID获取的课程信息</returns>
         [HttpGet("{courseId}")]
         public IActionResult GetCourseByCourseId(long courseId)
         {
@@ -139,8 +153,12 @@ namespace Xmu.Crms.ViceVersa
             //}
         }
 
-
-        // PUT: /course/{courseId}
+        /// <summary>
+        /// PUT: /course/{courseId}
+        /// </summary>
+        /// <param name="courseId">课程ID</param>
+        /// <param name="json">修改后的课程信息</param>
+        /// <returns>返回204表示修改成功</returns>
         [HttpPut("{courseId}")]
         public IActionResult PutCourseByCourseId(long courseId, [FromBody]dynamic json)
         {
@@ -176,8 +194,11 @@ namespace Xmu.Crms.ViceVersa
             //}
         }
 
-
-        // DELETE: /course/{courseId}
+        /// <summary>
+        /// DELETE: /course/{courseId}
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <returns></returns>
         [HttpDelete("{courseId}")]
         public IActionResult DeleteCourseByCourseId(long courseId)
         {

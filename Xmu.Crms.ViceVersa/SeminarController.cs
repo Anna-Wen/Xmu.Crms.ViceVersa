@@ -11,6 +11,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Xmu.Crms.ViceVersa
 {
+    /// <summary>
+    /// API Controller
+    /// 存放路由为"/seminar"下的与讨论课操作相关的方法的控制器
+    /// @author Group ViceVersa
+    /// </summary>
     [Produces("application/json")]
     [Route("/seminar")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

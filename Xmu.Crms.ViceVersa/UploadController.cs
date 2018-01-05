@@ -14,6 +14,11 @@ using Xmu.Crms.Shared.Service;
 
 namespace Xmu.Crms.ViceVersa
 {
+    /// <summary>
+    /// API Controller
+    /// 存放路由为"/upload"下的与上传操作相关的方法的控制器
+    /// @author Group ViceVersa
+    /// </summary>
     [Produces("application/json")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("/upload")]

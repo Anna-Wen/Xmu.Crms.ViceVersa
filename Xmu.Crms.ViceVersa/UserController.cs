@@ -13,6 +13,11 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Xmu.Crms.ViceVersa
 {
+    /// <summary>
+    /// API Controller
+    /// 存放路由为"/"下的与用户操作相关的方法的控制器
+    /// @author Group ViceVersa
+    /// </summary>
     [Produces("application/json")]
     [Route("")]
     public class UserController : Controller

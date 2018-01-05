@@ -11,6 +11,11 @@ using Xmu.Crms.Web.ViceVersa.VO;
 
 namespace Xmu.Crms.ViceVersa
 {
+    /// <summary>
+    /// API Controller
+    /// 存放路由为"/topic"下的与话题操作相关的方法的控制器
+    /// @author Group ViceVersa
+    /// </summary>
     [Produces("application/json")]
     [Route("/topic")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

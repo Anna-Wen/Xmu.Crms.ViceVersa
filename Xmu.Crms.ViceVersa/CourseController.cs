@@ -197,8 +197,8 @@ namespace Xmu.Crms.ViceVersa
         /// <summary>
         /// DELETE: /course/{courseId}
         /// </summary>
-        /// <param name="courseId"></param>
-        /// <returns></returns>
+        /// <param name="courseId">需要删除的课程ID</param>
+        /// <returns>返回204，课程删除成功</returns>
         [HttpDelete("{courseId}")]
         public IActionResult DeleteCourseByCourseId(long courseId)
         {
@@ -231,7 +231,11 @@ namespace Xmu.Crms.ViceVersa
             //}
         }
 
-        // GET: /course/{courseId}/class
+        /// <summary>
+        /// GET: /course/{courseId}/class
+        /// </summary>
+        /// <param name="courseId">需获取班级的课程ID</param>
+        /// <returns>按照课程ID获取的班级列表</returns>
         [HttpGet("{courseId}/class")]
         public IActionResult GetClassList(long courseId)
         {
@@ -260,7 +264,12 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // POST: /course/{courseId}/class
+        /// <summary>
+        /// POST: /course/{courseId}/class
+        /// </summary>
+        /// <param name="courseId">待创建班级的课程ID</param>
+        /// <param name="json">新创建班级的信息</param>
+        /// <returns>新创建班级的ID</returns>
         [HttpPost("{courseId}/class")]
         public IActionResult PostNewClass(long courseId, [FromBody]dynamic json)
         {
@@ -318,8 +327,12 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // GET: /course/{courseId}/seminar?embedGrade=false
-        // 不需要实现学生查看分数：embed=true???
+        /// <summary>
+        /// GET: /course/{courseId}/seminar?embedGrade=false
+        /// </summary>
+        /// <param name="courseId">需获取讨论课的课程ID</param>
+        /// <param name="embedGrade">是否包含分数（仅小程序需要）</param>
+        /// <returns>按照课程ID获取讨论课详情列表</returns>
         [HttpGet("{courseId}/seminar")]
         public IActionResult GetSeminarList(long courseId, [FromQuery]bool embedGrade = false)
         {
@@ -355,7 +368,12 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // POST: /course/{courseId}/seminar
+        /// <summary>
+        /// POST: /course/{courseId}/seminar
+        /// </summary>
+        /// <param name="courseId">待创建讨论课的课程ID</param>
+        /// <param name="json">创建的讨论课信息</param>
+        /// <returns>新创建的讨论课ID</returns>
         [HttpPost("{courseId}/seminar")]
         public IActionResult PostNewSeminar(long courseId, [FromBody]dynamic json)
         {
@@ -399,7 +417,11 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // GET: /course/{courseId}/grade
+        /// <summary>
+        /// GET: /course/{courseId}/grade
+        /// </summary>
+        /// <param name="courseId">需获取成绩的课程ID</param>
+        /// <returns>按照课程ID获取学生的所有讨论课成绩</returns>
         [HttpGet("{courseId}/grade")]
         public IActionResult GetStudentGradeUnderAllSeminar(long courseId)
         {

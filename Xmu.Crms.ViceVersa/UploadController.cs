@@ -45,7 +45,11 @@ namespace Xmu.Crms.ViceVersa
             //}
         }
 
-        // POST: /upload/avatar
+        /// <summary>
+        /// POST: /upload/avatar
+        /// </summary>
+        /// <param name="json">上传的头像</param>
+        /// <returns>成功存入服务器的头像文件的url</returns>
         [HttpPost("avatar")]
         public IActionResult UploadAvatar([FromBody]dynamic json)
         {
@@ -63,7 +67,11 @@ namespace Xmu.Crms.ViceVersa
             // 该返回file吗？还是什么object？
         }
 
-        // /upload/report?seminarId={seminarId}
+        /// <summary>
+        /// POST: /upload/report?seminarId={seminarId}
+        /// </summary>
+        /// <param name="seminarId">上传报告对应的讨论课ID</param>
+        /// <returns>成功存入服务器的报告文件的url</returns>
         [HttpPost("report")]
         public IActionResult UploadReport([FromQuery] long seminarId)
         {
@@ -103,7 +111,11 @@ namespace Xmu.Crms.ViceVersa
             return Created(fileUrl, files);
         }
 
-        // /upload/roster?classId={classId}
+        /// <summary>
+        /// POST: /upload/roster?classId={classId}
+        /// </summary>
+        /// <param name="classId">上传学生名单对应的班级ID</param>
+        /// <returns>返回204，导入学生名单成功</returns>
         [HttpPost("roster")]
         public IActionResult ImportXlsx([FromQuery] long classId)
         {

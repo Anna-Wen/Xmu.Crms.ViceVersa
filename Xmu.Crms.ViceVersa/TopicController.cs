@@ -30,7 +30,11 @@ namespace Xmu.Crms.ViceVersa
             _iTopicService = iTopicService;
         }
 
-        // GET: /topic/{topicId}
+        /// <summary>
+        /// GET: /topic/{topicId}
+        /// </summary>
+        /// <param name="topicId">需获取话题的ID</param>
+        /// <returns>按照ID获取的话题信息</returns>
         [HttpGet("{topicId}")]
         public IActionResult GetTopic(long topicId)
         {
@@ -57,7 +61,12 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // PUT: /topic/{topicId}
+        /// <summary>
+        /// PUT: /topic/{topicId}
+        /// </summary>
+        /// <param name="topicId">需修改话题的ID</param>
+        /// <param name="json">需修改的话题信息</param>
+        /// <returns>返回204，修改话题信息成功</returns>
         [HttpPut("{topicId}")]
         public IActionResult PutTopic(long topicId, [FromBody]dynamic json)
         {
@@ -94,7 +103,11 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // DELETE: /topic/{topicId}
+        /// <summary>
+        /// DELETE: /topic/{topicId}
+        /// </summary>
+        /// <param name="topicId">需删除话题的ID</param>
+        /// <returns>返回204，话题删除成功</returns>
         [HttpDelete("{topicId}")]
         public IActionResult DeleteTopic(long topicId)
         {
@@ -124,7 +137,11 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // GET: /topic/{topicId}/group
+        /// <summary>
+        /// GET: /topic/{topicId}/group
+        /// </summary>
+        /// <param name="topicId">需获取小组信息的话题ID</param>
+        /// <returns>按照话题ID获取的小组信息</returns>
         [HttpGet("{topicId}/group")]
         public IActionResult GetGroupsUnderTopic(long topicId)
         {

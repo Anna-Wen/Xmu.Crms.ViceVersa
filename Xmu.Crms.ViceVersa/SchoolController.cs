@@ -7,6 +7,7 @@ using System;
 
 namespace Xmu.Crms.ViceVersa
 {
+
     [Produces("application/json")]
     [Route("/school")]
 
@@ -51,17 +52,7 @@ namespace Xmu.Crms.ViceVersa
             {
                 // Get information from json
                 School newSchool = new School { Name = json.Name, Province = json.Province, City = json.City };
-                //Console.WriteLine(newSchool.City);//==============
-
-                //    //Get all the schools in the same city
-                //    IList<School> schoolList = _iSchoolService.ListSchoolByCity(json.City);
-               
-                //foreach(var school in schoolList)
-                //{
-                //    // If already has a school with the same name
-                //    if (school.Name.Equals(newSchool.Name))
-                //        return StatusCode(409); // Conflict();
-                //}
+              
                 ////Insert new school
                 long schoolId = _iSchoolService.InsertSchool(newSchool);
                 // Return school id

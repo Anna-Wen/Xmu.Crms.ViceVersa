@@ -28,7 +28,8 @@
 4. 该项目的运行环境为VS2017,使用.NetCore 4.6 + MVC框架 + RESTful API设计。  
     * Model在 Xmu.Crms.Shared 的 Model 文件夹中  
     * View在 Xmu.Crms.Web.ViceVersa 的View文件夹中  
-    * MVC Controller在 Xmu.Crms.Web.ViceVersa 的 Controller 文件夹中，API Controller在 Xmu.Crms.ViceVersa 中  
+    * MVC Controller在 Xmu.Crms.Web.ViceVersa 的 Controller 文件夹中  
+    * API Controller在 Xmu.Crms.ViceVersa 中  
 
 5. 我们上交的项目所连接的数据库为邱明老师的服务器上的数据库。  
     * 连接字符串在Xmu.Crms.ViceVersa中的appsettings.json中。  

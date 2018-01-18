@@ -13,6 +13,11 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Xmu.Crms.ViceVersa
 {
+    /// <summary>
+    /// API Controller
+    /// 存放路由为"/"下的与用户操作相关的方法的控制器
+    /// @author Group ViceVersa
+    /// </summary>
     [Produces("application/json")]
     [Route("")]
     public class UserController : Controller
@@ -28,7 +33,10 @@ namespace Xmu.Crms.ViceVersa
             _loginService = loginService;
         }
 
-        // GET: /me
+        /// <summary>
+        /// GET: /me
+        /// </summary>
+        /// <returns>返回当前用户的信息</returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("me")]
         public IActionResult GetCurrentUser()
@@ -50,10 +58,14 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // PUT: /me
+        /// <summary>
+        /// PUT: /me
+        /// </summary>
+        /// <param name="json">待修改的用户信息</param>
+        /// <returns>返回204，修改用户信息成功</returns>
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("me")]
-        public IActionResult Put(long id, [FromBody] dynamic json)
+        public IActionResult Put([FromBody] dynamic json)
         {
             try
             {
@@ -134,7 +146,11 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // POST: /signin
+        /// <summary>
+        /// POST: /signin
+        /// </summary>
+        /// <param name="json">登录的手机号和密码信息</param>
+        /// <returns>返回SignInResult对象的Json</returns>
         [HttpPost("signin")]
         public IActionResult Signin([FromBody] dynamic json)
         {
@@ -165,7 +181,11 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // 用来生成正确登陆后的结果
+        /// <summary>
+        /// 用来生成正确登陆后的结果
+        /// </summary>
+        /// <param name="user">UserInfo对象，为当前用户的信息</param>
+        /// <returns>返回SignInResult对象，包括新生成的JWT</returns>
         private SignInResult GenerateJwtAndSignInResult(UserInfo user)
         {
             SignInResult signInResult = new SignInResult
@@ -188,7 +208,11 @@ namespace Xmu.Crms.ViceVersa
             return signInResult;
         }
 
-        // POST: /register
+        /// <summary>
+        /// POST: /register
+        /// </summary>
+        /// <param name="json">新注册的用户信息</param>
+        /// <returns>返回SignInResult对象的Json</returns>
         [HttpPost("register")]
         public IActionResult Register([FromBody] dynamic json)
         {
@@ -214,6 +238,9 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
+        /// <summary>
+        /// SignInResult类，保存JWT中有的三个信息：用户ID、用户类型Type和用户姓名Name
+        /// </summary>
         public class SignInResult
         {
             public long Id { get; set; }

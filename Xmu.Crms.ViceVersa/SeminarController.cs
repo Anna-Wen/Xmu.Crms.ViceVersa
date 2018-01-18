@@ -11,6 +11,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Xmu.Crms.ViceVersa
 {
+    /// <summary>
+    /// API Controller
+    /// 存放路由为"/seminar"下的与讨论课操作相关的方法的控制器
+    /// @author Group ViceVersa
+    /// </summary>
     [Produces("application/json")]
     [Route("/seminar")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -27,7 +32,11 @@ namespace Xmu.Crms.ViceVersa
             _iSeminarGroupService = iSeminarGroupService;
         }
 
-        // GET: /seminar/{seminarId}
+        /// <summary>
+        /// GET: /seminar/{seminarId}
+        /// </summary>
+        /// <param name="seminarId">需获取讨论课的ID</param>
+        /// <returns>讨论课ID对应的信息</returns>
         [HttpGet("{seminarId}", Name = "Get")]
         public IActionResult GetSeminar(long seminarId)
         {
@@ -64,7 +73,12 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // PUT: /seminar/{seminarId}
+        /// <summary>
+        /// PUT: /seminar/{seminarId}
+        /// </summary>
+        /// <param name="seminarId">需修改的讨论课ID</param>
+        /// <param name="json">需修改的讨论课信息</param>
+        /// <returns>返回204，讨论课修改成功</returns>
         [HttpPut("{seminarId}")]
         public IActionResult PutSeminar(long seminarId, [FromBody]dynamic json)
         {
@@ -103,7 +117,11 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // DELETE: /seminar/{seminarId}
+        /// <summary>
+        /// DELETE: /seminar/{seminarId}
+        /// </summary>
+        /// <param name="seminarId">需删除讨论课的ID</param>
+        /// <returns>返回204，删除讨论课成功</returns>
         [HttpDelete("{seminarId}")]
         public IActionResult DeleteSeminar(long seminarId)
         {
@@ -133,22 +151,11 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        //// GET: /seminar/{seminarId}/detail
-        //[HttpGet("{seminarId}/detail")]
-        //public IActionResult GetSeminarDetails(int seminarId)
-        //{
-            //// Fetch data from database
-            //SeminarDetail seminarDetail = new SeminarDetail { Id = 1, Name = "概要设计", StartTime = "10/10/2017", EndTime = "24/10/2017", Site = "海韵教学楼201", TeacherName = "邱明", TeacherEmail = "mingqiu@xmu.edu.cn" };
-
-            //// If seminar not found
-            //if (seminarDetail == null)
-            //    return NotFound();
-
-            //// Success
-            //return Json(seminarDetail);
-        //}
-
-        // GET: /seminar/{seminarId}/topic
+        /// <summary>
+        /// GET: /seminar/{seminarId}/topic
+        /// </summary>
+        /// <param name="seminarId">需获取话题的讨论课的ID</param>
+        /// <returns>按讨论课ID获取的话题列表</returns>
         [HttpGet("{seminarId}/topic")]
         public IActionResult GetSeminarTopics(long seminarId)
         {
@@ -179,7 +186,12 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // POST: /seminar/{seminarId}/topic
+        /// <summary>
+        /// POST: /seminar/{seminarId}/topic
+        /// </summary>
+        /// <param name="seminarId">待创建话题的讨论课ID</param>
+        /// <param name="json">待创建话题的信息</param>
+        /// <returns>新创建话题的ID</returns>
         [HttpPost("{seminarId}/topic")]
         public IActionResult PostNewTopicUnderSeminar(long seminarId, [FromBody]dynamic json)
         {
@@ -217,7 +229,13 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // GET: /seminar/{seminarId}/group?classId={classId}
+        /// <summary>
+        /// GET: /seminar/{seminarId}/group?classId={classId}
+        /// </summary>
+        /// <param name="seminarId">需获取小组的讨论课ID</param>
+        /// <param name="gradeable">为true时，仅返回当前用户可打分的小组</param>
+        /// <param name="classId">仅返回此班级的小组</param>
+        /// <returns>按照讨论课ID查找的小组列表</returns>
         [HttpGet("{seminarId}/group")]
         public IActionResult GetSeminarGroups(long seminarId, [FromQuery]bool gradeable, [FromQuery]int classId)
         {
@@ -278,7 +296,11 @@ namespace Xmu.Crms.ViceVersa
             }
         }
 
-        // GET: /seminar/{seminarId}/group/my
+        /// <summary>
+        /// GET: /seminar/{seminarId}/group/my
+        /// </summary>
+        /// <param name="seminarId">需获取小组的讨论课ID</param>
+        /// <returns>按照讨论课ID获取当前学生所在的小组详情</returns>
         [HttpGet("{seminarId}/group/my")]
         public IActionResult GetMySeminarGroup(long seminarId)
         {
